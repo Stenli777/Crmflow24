@@ -1,6 +1,7 @@
 import { Box, Container, Divider, Typography } from "@mui/material";
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
+import { legalConfig } from "@/config/legal";
 
 export function Footer() {
   return (
@@ -11,23 +12,41 @@ export function Footer() {
           sx={{
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
-            gap: 1,
+            gap: 2,
             justifyContent: "space-between",
           }}
         >
-          <Box>
+          <Box sx={{ maxWidth: 720 }}>
             <Typography variant="body2" color="text.secondary">
               © {new Date().getFullYear()} {siteConfig.brandName}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               {siteConfig.siteDomain} • {siteConfig.city} • {siteConfig.contactEmail}
             </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5, lineHeight: 1.6 }}>
+              {legalConfig.operatorName} · ИНН {legalConfig.inn} · КПП {legalConfig.kpp} · ОГРН{" "}
+              {legalConfig.ogrn}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, lineHeight: 1.6 }}>
+              Юр. адрес: {legalConfig.legalAddress}
+            </Typography>
+            <Typography variant="caption" color="text.secondary" component="p" sx={{ mt: 1.5, display: "block", lineHeight: 1.6 }}>
+              {siteConfig.brandName} — проект {legalConfig.operatorName}. Услуги по настройке и
+              сопровождению Битрикс24. Названия «Битрикс24» и «Bitrix24» являются товарными знаками ООО
+              «1С-Битрикс». Сайт не является официальным сайтом Битрикс24.
+            </Typography>
           </Box>
-          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-            <Link href="/services">Услуги</Link>
-            <Link href="/cases">Кейсы</Link>
-            <Link href="/about">О компании</Link>
-            <Link href="/contacts">Контакты</Link>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.25, alignItems: { xs: "flex-start", md: "flex-end" } }}>
+            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+              <Link href="/services">Услуги</Link>
+              <Link href="/cases">Кейсы</Link>
+              <Link href="/about">О компании</Link>
+              <Link href="/contacts">Контакты</Link>
+            </Box>
+            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+              <Link href="/privacy">Политика ПДн</Link>
+              <Link href="/cookies">Политика cookie</Link>
+            </Box>
           </Box>
         </Box>
       </Container>
