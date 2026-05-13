@@ -53,6 +53,12 @@ function mergeUtmsForSubmit(initial: ContactFormProps["initialUtm"]): Record<(ty
   return out;
 }
 
+function getServiceFromQuery(): string {
+  if (typeof window === "undefined") return "";
+  const params = new URLSearchParams(window.location.search);
+  return (params.get("service") || params.get("topic") || "").trim();
+}
+
 export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormProps) {
   const [form, setForm] = useState<FormState>({
     name: "",
@@ -125,7 +131,7 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
               phone: form.phone,
               email: form.email,
               message: form.message,
-              service: serviceFromQuery,
+              service: getServiceFromQuery() || serviceFromQuery,
               pageUrl,
               consentPersonalData: true,
               consentPd: true,

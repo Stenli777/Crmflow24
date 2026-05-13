@@ -5,16 +5,18 @@ export function PageHeading({
   subtitle,
 }: {
   title: string;
-  subtitle: string;
+  subtitle?: string;
 }) {
   return (
     <Stack spacing={1.25}>
-      <Typography variant="h2" sx={{ maxWidth: 920 }}>
+      <Typography component="h1" variant="h2" sx={{ maxWidth: 920 }}>
         {title}
       </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 860, lineHeight: 1.65 }}>
-        {subtitle}
-      </Typography>
+      {subtitle ? (
+        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 860, lineHeight: 1.65 }}>
+          {subtitle}
+        </Typography>
+      ) : null}
     </Stack>
   );
 }

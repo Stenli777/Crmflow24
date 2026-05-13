@@ -5,6 +5,7 @@ import { LegalPageShell } from "@/components/legal/LegalPageShell";
 import { LegalDocFooterLinks } from "@/components/legal/LegalDocFooterLinks";
 import { siteConfig } from "@/config/site";
 import { legalConfig } from "@/config/legal";
+import { ANALYTICS_COOKIE_NAME } from "@/lib/cookieConsentStorage";
 
 export const metadata: Metadata = {
   title: "Политика использования cookie",
@@ -24,7 +25,7 @@ export default function CookiesPage() {
   return (
     <LegalPageShell
       title="Политика в отношении использования файлов cookie"
-      subtitle="Описание категорий cookie и аналитики. Яндекс.Метрика подключается только после выбора в баннере (в т.ч. через «Настроить»). Google Analytics и Cloudflare не используются. Выбор сохраняется в браузере (localStorage)."
+      subtitle="Описание категорий cookie и аналитики. Яндекс.Метрика подключается только после выбора в баннере (в т.ч. через «Настроить»). Google Analytics и Cloudflare не используются. Выбор сохраняется в браузере (localStorage и, при включении аналитики, технический first-party cookie для согласованной подгрузки счётчика)."
     >
       <Stack spacing={2} sx={{ mt: 2, maxWidth: 900 }}>
         <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
@@ -62,7 +63,16 @@ export default function CookiesPage() {
           </Box>
           ). Такие сведения не отключаются через баннер, так как без них нельзя сохранить ваш выбор. При
           необходимости также могут использоваться технически необходимые cookie для стабильной работы сайта.
-          Аналитические cookies Яндекс.Метрики — только после согласия пользователя в баннере.
+          Если вы включили аналитику, дополнительно выставляется технический first-party cookie{" "}
+          <Box component="code" sx={{ fontSize: "0.9em" }}>
+            {ANALYTICS_COOKIE_NAME}
+          </Box>{" "}
+          (значение{" "}
+          <Box component="code" sx={{ fontSize: "0.9em" }}>
+            1
+          </Box>
+          ) — он фиксирует ваше согласие на уровне запроса к серверу; без включённой аналитики этот cookie не
+          используется. Сторонние аналитические cookie Яндекс.Метрики — только после согласия в баннере.
         </Typography>
 
         <Typography variant="h5" sx={{ fontWeight: 700, mt: 2, mb: 1 }}>

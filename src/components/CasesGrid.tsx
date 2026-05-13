@@ -42,6 +42,13 @@ export function CasesGrid({ limit }: { limit?: number }) {
                 filter: "saturate(1.04) contrast(1.02)",
               }}
             />
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: "block", mt: 1, textAlign: "center", lineHeight: 1.45, fontWeight: 600 }}
+            >
+              Сюда можно добавить изображение проекта
+            </Typography>
           </Box>
           <CardContent>
             <Stack spacing={1.2}>

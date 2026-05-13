@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
 import { HomePage } from "@/components/pages/HomePage";
 import { siteConfig } from "@/config/site";
 
@@ -15,5 +16,10 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <HomePage />;
+  return (
+    <>
+      <FaqJsonLd />
+      <HomePage />
+    </>
+  );
 }

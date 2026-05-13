@@ -14,16 +14,28 @@ import { Footer } from "@/components/Footer";
 import { Section } from "@/components/Section";
 import { CtaBanner } from "@/components/CtaBanner";
 import { CompanyRequisitesFull } from "@/components/CompanyRequisitesFull";
+import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { legalConfig } from "@/config/legal";
+
+const border = "1px solid rgba(15, 23, 42, 0.08)";
+const r = "16px";
 
 const workSteps = [
   "Разбираем текущий процесс",
-  "Проектируем архитектуру CRM",
+  "Проектируем CRM",
   "Настраиваем Bitrix24",
-  "Подключаем каналы, интеграции и автоматизации",
+  "Подключаем интеграции и автоматизации",
   "Обучаем команду",
   "Сопровождаем и развиваем систему",
-];
+] as const;
+
+const whyLongTerm = [
+  "фиксируем процессы и роли;",
+  "не перегружаем CRM;",
+  "объясняем логику автоматизации;",
+  "развиваем систему постепенно;",
+  "сопровождаем после запуска.",
+] as const;
 
 export function AboutPageClient() {
   return (
@@ -38,9 +50,17 @@ export function AboutPageClient() {
           О компании CRM Flow 24
         </Typography>
         <Typography color="text.secondary" sx={{ mt: 1.5, maxWidth: 900, lineHeight: 1.7 }}>
-          CRM Flow 24 — команда технических интеграторов, которая внедряет, настраивает и сопровождает Bitrix24 под
+          CRM Flow 24 — небольшая команда технических интеграторов: внедряем, настраиваем и сопровождаем Bitrix24 под
           реальные процессы продаж, сервиса и управления.
         </Typography>
+
+        <Box sx={{ mt: 2.5, maxWidth: 560 }}>
+          <MediaPlaceholder
+            label="Сюда можно добавить фото команды или офиса"
+            aspectRatio="16 / 9"
+            minHeight={{ xs: 120, md: 140 }}
+          />
+        </Box>
 
         <Stack spacing={1.25} sx={{ mt: 2.5, maxWidth: 900 }}>
           <Typography color="text.secondary" sx={{ lineHeight: 1.7 }}>
@@ -56,11 +76,8 @@ export function AboutPageClient() {
             .
           </Typography>
           <Typography color="text.secondary" sx={{ lineHeight: 1.7 }}>
-            За время работы с {legalConfig.workSinceYear} года реализовано около {legalConfig.projectsCount} проектов.
-            Самый долгий клиент работает с нами более {legalConfig.longestClientYearsMin} лет.
-          </Typography>
-          <Typography color="text.secondary" sx={{ lineHeight: 1.7 }}>
-            Отрасли: {legalConfig.industriesLine}.
+            С {legalConfig.workSinceYear} года реализовано {legalConfig.projectsCount} проектов. Самый долгий клиент
+            работает с нами более {legalConfig.longestClientYearsMin} лет.
           </Typography>
           <Typography color="text.secondary" sx={{ lineHeight: 1.7 }}>
             Срок проекта зависит от объёма задач: количества воронок, интеграций, ролей, автоматизаций и необходимости
@@ -73,8 +90,47 @@ export function AboutPageClient() {
           затем закрепление в регулярной работе.
         </Typography>
 
+        <Box sx={{ mt: 3.5, maxWidth: 900 }}>
+          <Typography variant="h5" sx={{ fontWeight: 800, mb: 1.5, letterSpacing: "-0.01em" }}>
+            С кем работаем
+          </Typography>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+            {legalConfig.clientIndustries.map((label) => (
+              <Box
+                key={label}
+                sx={{
+                  px: 1.35,
+                  py: 0.75,
+                  borderRadius: "999px",
+                  border,
+                  bgcolor: "#ffffff",
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
+                  lineHeight: 1.35,
+                  color: "text.primary",
+                }}
+              >
+                {label}
+              </Box>
+            ))}
+          </Box>
+        </Box>
+
+        <Box sx={{ mt: 3.5, maxWidth: 900 }}>
+          <Typography variant="h5" sx={{ fontWeight: 800, mb: 1.5, letterSpacing: "-0.01em" }}>
+            Почему компании работают с нами годами
+          </Typography>
+          <Stack component="ul" spacing={0.85} sx={{ m: 0, pl: 2.25, color: "text.secondary", lineHeight: 1.65 }}>
+            {whyLongTerm.map((line) => (
+              <Typography key={line} component="li" sx={{ pl: 0.25 }}>
+                {line}
+              </Typography>
+            ))}
+          </Stack>
+        </Box>
+
         <Box sx={{ mt: 3 }}>
-          <Typography variant="h5" sx={{ fontWeight: 700, mb: 1.5 }}>
+          <Typography variant="h5" sx={{ fontWeight: 800, mb: 1.5, letterSpacing: "-0.01em" }}>
             Как работаем
           </Typography>
           <Stack
@@ -94,7 +150,7 @@ export function AboutPageClient() {
           <CompanyRequisitesFull />
         </Box>
 
-        <Card variant="outlined" sx={{ borderRadius: 3, mt: 3, maxWidth: 900 }}>
+        <Card variant="outlined" sx={{ borderRadius: r, mt: 3, maxWidth: 900 }}>
           <CardContent>
             <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}>
               Документы и связь

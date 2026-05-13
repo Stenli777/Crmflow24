@@ -8,11 +8,11 @@ import {
   Drawer,
   IconButton,
   Toolbar,
-  Typography,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -25,10 +25,13 @@ const items: Array<{ label: string; href: string }> = [
   { label: "Контакты", href: "/contacts" },
 ];
 
+const headerTransition = "background-color 220ms ease, backdrop-filter 220ms ease, border-color 220ms ease";
+const layoutTransition = "min-height 220ms ease, padding-top 220ms ease, padding-bottom 220ms ease";
+
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const scrolled = useScrollTrigger({ disableHysteresis: true, threshold: 6 });
+  const scrolled = useScrollTrigger({ disableHysteresis: true, threshold: 8 });
 
   return (
     <AppBar
@@ -37,48 +40,68 @@ export function Header() {
       sx={{
         top: 0,
         zIndex: (theme) => theme.zIndex.appBar,
-        bgcolor: scrolled ? "rgba(255,255,255,0.88)" : "rgba(255,255,255,0.72)",
+        bgcolor: scrolled ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.72)",
         color: "text.primary",
         backdropFilter: scrolled ? "blur(18px)" : "blur(12px)",
         borderBottom: "1px solid rgba(0,0,0,0.08)",
-        transition: "background-color 160ms ease, backdrop-filter 160ms ease",
+        transition: headerTransition,
       }}
     >
       <Container maxWidth="lg">
-        <Toolbar disableGutters sx={{ minHeight: 72 }}>
+        <Toolbar
+          disableGutters
+          sx={{
+            minHeight: { xs: scrolled ? 56 : 64, md: scrolled ? 58 : 72 },
+            py: { xs: scrolled ? 0.5 : 0.75, md: scrolled ? 0.65 : 1 },
+            transition: layoutTransition,
+          }}
+        >
           <Box
             sx={{
               width: "100%",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              gap: 2,
+              gap: { xs: 1.25, md: 2 },
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
-              <Box
-                aria-hidden
-                sx={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: 2,
-                  background:
-                    "linear-gradient(135deg, #2E7DFF 0%, #00BFA6 100%)",
-                }}
-              />
-              <Typography
-                variant="subtitle1"
-                sx={{ fontWeight: 700, letterSpacing: -0.2 }}
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Link
+                href="/"
+                aria-label={siteConfig.brandName}
+                style={{ lineHeight: 0, display: "inline-flex" }}
               >
-                <Link href="/">{siteConfig.brandName}</Link>
-              </Typography>
+                <Box
+                  sx={{
+                    transition: "transform 220ms ease",
+                    transform: scrolled ? "scale(0.94)" : "scale(1)",
+                    transformOrigin: "left center",
+                  }}
+                >
+                  <Image
+                    src="/images/logo.png"
+                    alt=""
+                    width={175}
+                    height={72}
+                    priority
+                    sizes="(max-width: 900px) 132px, 175px"
+                    style={{
+                      height: scrolled ? 34 : 40,
+                      width: "auto",
+                      maxWidth: "min(100%, 175px)",
+                      display: "block",
+                      transition: "height 220ms ease, max-width 220ms ease",
+                    }}
+                  />
+                </Box>
+              </Link>
             </Box>
 
             <Box
               sx={{
                 display: { xs: "none", md: "flex" },
                 alignItems: "center",
-                gap: 0.5,
+                gap: 0.25,
               }}
             >
               {items.map((it) => (
@@ -90,6 +113,11 @@ export function Header() {
                   sx={{
                     textTransform: "none",
                     fontWeight: pathname === it.href ? 700 : 500,
+                    px: scrolled ? 1 : 1.15,
+                    py: scrolled ? 0.5 : 0.65,
+                    minHeight: scrolled ? 36 : 40,
+                    fontSize: scrolled ? "0.9rem" : "0.9375rem",
+                    transition: "padding 220ms ease, min-height 220ms ease, font-size 220ms ease",
                   }}
                 >
                   {it.label}
@@ -97,12 +125,20 @@ export function Header() {
               ))}
             </Box>
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.75, sm: 1 } }}>
               <Button
                 variant="contained"
                 component={Link}
                 href="/contacts#contact-form"
-                sx={{ textTransform: "none", fontWeight: 700 }}
+                size="medium"
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 700,
+                  px: { xs: 1.5, sm: scrolled ? 1.75 : 2 },
+                  py: scrolled ? 0.65 : 0.85,
+                  fontSize: scrolled ? "0.875rem" : "0.9375rem",
+                  transition: "padding 220ms ease, font-size 220ms ease",
+                }}
               >
                 {siteConfig.primaryCta}
               </Button>
@@ -110,6 +146,7 @@ export function Header() {
                 onClick={() => setOpen(true)}
                 sx={{ display: { xs: "inline-flex", md: "none" } }}
                 aria-label="Открыть меню"
+                size={scrolled ? "small" : "medium"}
               >
                 <MenuIcon />
               </IconButton>
@@ -147,4 +184,3 @@ export function Header() {
     </AppBar>
   );
 }
-

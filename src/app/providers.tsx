@@ -5,7 +5,7 @@ import type { PropsWithChildren } from "react";
 import { Suspense } from "react";
 import { CookieConsentProvider } from "@/context/CookieConsentContext";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
-import { YandexMetrika } from "@/components/YandexMetrika";
+import { ConsentAnalyticsCookieSync } from "@/components/ConsentAnalyticsCookieSync";
 import { UtmSessionBridge } from "@/components/UtmSessionBridge";
 
 const theme = createTheme({
@@ -169,9 +169,9 @@ export function Providers({ children }: PropsWithChildren) {
         <Suspense fallback={null}>
           <UtmSessionBridge />
         </Suspense>
+        <ConsentAnalyticsCookieSync />
         {children}
         <CookieConsentBanner />
-        <YandexMetrika />
       </CookieConsentProvider>
     </ThemeProvider>
   );

@@ -19,10 +19,7 @@ export const metadata: Metadata = {
 
 export default function ConsentPage() {
   return (
-    <LegalPageShell
-      title="Согласие на обработку персональных данных"
-      subtitle="Типовой текст для отображения рядом с формой заявки и в CRM. Редакция подлежит проверке юристом."
-    >
+    <LegalPageShell title="Согласие на обработку персональных данных">
       <Stack spacing={2} sx={{ mt: 2, maxWidth: 900 }}>
         <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
           Настоящим я, заполняя форму на сайте{" "}

@@ -8,9 +8,11 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useRouter } from "next/navigation";
 import type { StoredCookieConsent } from "@/lib/cookieConsentStorage";
 import {
   readStoredCookieConsent,
+  syncAnalyticsCookie,
   writeStoredCookieConsent,
 } from "@/lib/cookieConsentStorage";
 
@@ -37,6 +39,7 @@ function nowIso() {
 }
 
 export function CookieConsentProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [hydrated, setHydrated] = useState(false);
   const [consent, setConsent] = useState<StoredCookieConsent | null>(null);
   const [cookieDialogOpen, setCookieDialogOpen] = useState(false);
@@ -48,11 +51,16 @@ export function CookieConsentProvider({ children }: { children: React.ReactNode 
     });
   }, []);
 
-  const persist = useCallback((next: StoredCookieConsent) => {
-    writeStoredCookieConsent(next);
-    setConsent(next);
-    setCookieDialogOpen(false);
-  }, []);
+  const persist = useCallback(
+    (next: StoredCookieConsent) => {
+      writeStoredCookieConsent(next);
+      syncAnalyticsCookie(next);
+      setConsent(next);
+      setCookieDialogOpen(false);
+      router.refresh();
+    },
+    [router],
+  );
 
   const acceptAll = useCallback(() => {
     persist({

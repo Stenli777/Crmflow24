@@ -9,7 +9,7 @@ export function LegalPageShell({
   title,
   subtitle,
   children,
-}: PropsWithChildren<{ title: string; subtitle: string }>) {
+}: PropsWithChildren<{ title: string; subtitle?: string }>) {
   return (
     <Box sx={{ minHeight: "100vh" }}>
       <Header />

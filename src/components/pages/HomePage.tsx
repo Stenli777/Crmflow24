@@ -7,6 +7,7 @@ import {
   Box,
   Button,
   Container,
+  Link as MuiLink,
   Paper,
   Stack,
   Typography,
@@ -21,8 +22,10 @@ import { Section } from "@/components/Section";
 import { ServicesGrid } from "@/components/ServicesGrid";
 import { StagesGrid } from "@/components/StagesGrid";
 import { CtaBanner } from "@/components/CtaBanner";
+import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import {
   bitrixAssembly,
+  bitrixConnectItems,
   clientPainPoints,
   faqs,
   homePageCases,
@@ -69,7 +72,7 @@ function SectionHeading({
           {kicker}
         </Typography>
       ) : null}
-      <Typography variant="h3" sx={{ maxWidth: 800 }}>
+      <Typography component="h2" variant="h3" sx={{ maxWidth: 800 }}>
         {title}
       </Typography>
       {subtitle ? (
@@ -123,6 +126,54 @@ export function HomePage() {
               >
                 Настраиваем Bitrix24 так, чтобы продажи, заявки и отчёты были под контролем
               </Typography>
+              <Paper
+                elevation={0}
+                sx={{
+                  borderRadius: r,
+                  border: "1px solid rgba(46, 125, 255, 0.16)",
+                  bgcolor: "rgba(248, 250, 252, 0.85)",
+                  boxShadow: "0 1px 0 rgba(15, 23, 42, 0.04)",
+                  p: { xs: 1.75, sm: 2 },
+                  maxWidth: 620,
+                }}
+              >
+                <Stack spacing={1.25}>
+                  <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 1 }}>
+                    <Box
+                      sx={{
+                        px: 1.15,
+                        py: 0.45,
+                        borderRadius: "999px",
+                        border: "1px solid rgba(46, 125, 255, 0.28)",
+                        bgcolor: "rgba(46, 125, 255, 0.08)",
+                        fontSize: "0.75rem",
+                        fontWeight: 800,
+                        letterSpacing: "0.04em",
+                        color: "primary.main",
+                        lineHeight: 1.35,
+                      }}
+                    >
+                      Бизнес-партнёр Битрикс24
+                    </Box>
+                    <MuiLink
+                      href={legalConfig.bitrixPartnerProfileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      underline="hover"
+                      sx={{ fontSize: "0.8125rem", fontWeight: 700, color: "text.primary" }}
+                    >
+                      Профиль в каталоге партнёров ↗
+                    </MuiLink>
+                  </Box>
+                  <Typography sx={{ fontSize: "0.9375rem", fontWeight: 700, lineHeight: 1.45, color: "text.primary" }}>
+                    {legalConfig.projectsCount} проектов • работа с {legalConfig.workSinceYear} года • сопровождение
+                    клиентов более {legalConfig.longestClientYearsMin} лет
+                  </Typography>
+                  <Typography sx={{ fontSize: "0.875rem", lineHeight: 1.55, color: "text.secondary" }}>
+                    Настраиваем CRM, автоматизацию, телефонию и коммуникации внутри Bitrix24
+                  </Typography>
+                </Stack>
+              </Paper>
               <Typography
                 sx={{
                   fontSize: { xs: "1.02rem", md: "1.0625rem" },
@@ -134,38 +185,6 @@ export function HomePage() {
                 Помогаем перейти из Excel, AmoCRM и разрозненных каналов в понятную CRM-систему: воронки,
                 телефония, мессенджеры, автоматизации, BI-отчёты и контроль работы менеджеров.
               </Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: 1,
-                  rowGap: 1,
-                }}
-              >
-                {[
-                  `Бизнес-партнёр Битрикс24 с ${legalConfig.businessPartnerSinceYear} года`,
-                  `${legalConfig.projectsCount} проектов`,
-                  `Работаем с ${legalConfig.workSinceYear} года`,
-                  `Клиентское сопровождение более ${legalConfig.longestClientYearsMin} лет`,
-                ].map((line) => (
-                  <Box
-                    key={line}
-                    sx={{
-                      px: 1.25,
-                      py: 0.6,
-                      borderRadius: "999px",
-                      border: "1px solid rgba(46, 125, 255, 0.22)",
-                      bgcolor: "rgba(46, 125, 255, 0.05)",
-                      fontSize: "0.8125rem",
-                      fontWeight: 600,
-                      color: "text.primary",
-                      lineHeight: 1.35,
-                    }}
-                  >
-                    {line}
-                  </Box>
-                ))}
-              </Box>
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.25 }}>
                 <Button
                   component={Link}
@@ -308,8 +327,57 @@ export function HomePage() {
               </Paper>
             </Box>
           </Box>
+
+          <Box sx={{ mt: { xs: 3, md: 4 }, maxWidth: 960, mx: "auto" }}>
+            <MediaPlaceholder
+              label="Сюда можно добавить скриншот CRM"
+              aspectRatio="21 / 9"
+              minHeight={{ xs: 100, md: 120 }}
+            />
+          </Box>
         </Container>
       </Box>
+
+      <Section id="bitrix-connect">
+        <SectionHeading
+          kicker="Внутри продукта"
+          title="Что подключаем и настраиваем внутри Bitrix24"
+          subtitle="Реальные модули и каналы: без списка «всех возможных интеграций мира» — только то, что обычно нужно бизнесу на практике."
+        />
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 1,
+          }}
+        >
+          {bitrixConnectItems.map((label) => (
+            <Box
+              key={label}
+              sx={{
+                px: 1.35,
+                py: 0.85,
+                borderRadius: "999px",
+                border,
+                bgcolor: "#ffffff",
+                fontSize: "0.875rem",
+                fontWeight: 600,
+                color: "text.primary",
+                lineHeight: 1.35,
+                boxShadow: "0 1px 0 rgba(15, 23, 42, 0.04)",
+                transition: "border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease",
+                "&:hover": {
+                  borderColor: "rgba(46, 125, 255, 0.28)",
+                  boxShadow: "0 6px 18px rgba(15, 23, 42, 0.06)",
+                  transform: "translateY(-1px)",
+                },
+              }}
+            >
+              {label}
+            </Box>
+          ))}
+        </Box>
+      </Section>
 
       <Section id="audience" tone="muted">
         <SectionHeading
@@ -400,6 +468,9 @@ export function HomePage() {
           title="Как это выглядит в проектах"
           subtitle="Коротко: что было, что сделали, что изменилось. Без «маркетинговых» цифр — спокойные формулировки, которые ближе к реальной жизни внедрения."
         />
+        <Box sx={{ mb: 2.5 }}>
+          <MediaPlaceholder label="Сюда можно добавить изображение проекта" aspectRatio="16 / 9" />
+        </Box>
         <Stack spacing={2.5}>
           {homePageCases.map((item) => (
             <Paper
@@ -468,10 +539,19 @@ export function HomePage() {
       <Section id="process">
         <SectionHeading
           kicker="Процесс"
-          title="Как проходит внедрение"
-          subtitle="Прозрачные этапы, понятные артефакты и согласование приоритетов — без ощущения «чёрного ящика»."
+          title="Как работаем"
+          subtitle="Понятные этапы и согласование приоритетов: от разбора процесса до сопровождения после запуска."
         />
+        <Box sx={{ mb: 2.5 }}>
+          <MediaPlaceholder label="Сюда можно добавить схему процесса" aspectRatio="16 / 9" />
+        </Box>
         <StagesGrid />
+        <Typography
+          color="text.secondary"
+          sx={{ mt: 2.5, maxWidth: 720, fontSize: "0.9375rem", lineHeight: 1.6 }}
+        >
+          Срок проекта зависит от объёма задач, количества интеграций и сложности процессов.
+        </Typography>
       </Section>
 
       <Section id="roles" tone="muted">
