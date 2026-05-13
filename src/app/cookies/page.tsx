@@ -24,7 +24,7 @@ export default function CookiesPage() {
   return (
     <LegalPageShell
       title="Политика в отношении использования файлов cookie"
-      subtitle="Описание категорий cookie и аналитики. Яндекс.Метрика подключается только после выбора в баннере (в т.ч. через «Настроить»). Выбор сохраняется в браузере (localStorage)."
+      subtitle="Описание категорий cookie и аналитики. Яндекс.Метрика подключается только после выбора в баннере (в т.ч. через «Настроить»). Google Analytics и Cloudflare не используются. Выбор сохраняется в браузере (localStorage)."
     >
       <Stack spacing={2} sx={{ mt: 2, maxWidth: 900 }}>
         <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
@@ -49,15 +49,20 @@ export default function CookiesPage() {
         </Typography>
 
         <Typography variant="h5" sx={{ fontWeight: 700, mt: 2, mb: 1 }}>
-          2. Строго необходимые cookie
+          2. Необходимые cookie и запись выбора
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-          Используются для базовой работы Сайта и хранения вашего решения по баннеру согласия (ключ{" "}
+          Для работы Сайта и сохранения вашего решения по баннеру используется запись в{" "}
+          <Box component="code" sx={{ fontSize: "0.9em" }}>
+            localStorage
+          </Box>{" "}
+          (ключ{" "}
           <Box component="code" sx={{ fontSize: "0.9em" }}>
             crmflow24_cookie_consent_v1
-          </Box>{" "}
-          в localStorage). Такие сведения не отключаются через баннер, так как без них нельзя сохранить
-          ваш выбор.
+          </Box>
+          ). Такие сведения не отключаются через баннер, так как без них нельзя сохранить ваш выбор. При
+          необходимости также могут использоваться технически необходимые cookie для стабильной работы сайта.
+          Аналитические cookies Яндекс.Метрики — только после согласия пользователя в баннере.
         </Typography>
 
         <Typography variant="h5" sx={{ fontWeight: 700, mt: 2, mb: 1 }}>
@@ -67,7 +72,9 @@ export default function CookiesPage() {
           После включения аналитики в баннере на Сайте подключается{" "}
           <strong>Яндекс.Метрика</strong> (ООО «ЯНДЕКС», Российская Федерация). Идентификатор счётчика:{" "}
           <strong>109166748</strong>. Возможны вебвизор и карта кликов — в объёме настроек счётчика. До
-          согласия скрипт Метрики не загружается.
+          согласия скрипт Метрики не загружается. <strong>Google Analytics не используется.</strong>{" "}
+          <strong>Cloudflare не используется.</strong> Сторонние чаты и виджеты на Сайте не используются, в том числе
+          Telegram- и WhatsApp-виджеты.
         </Typography>
 
         <Typography variant="h5" sx={{ fontWeight: 700, mt: 2, mb: 1 }}>

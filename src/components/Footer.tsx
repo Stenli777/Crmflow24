@@ -8,7 +8,7 @@ export function Footer() {
   return (
     <Box component="footer" sx={{ mt: 6 }}>
       <Divider />
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Container maxWidth="lg" sx={{ py: 3 }}>
         <Box
           sx={{
             display: "flex",
@@ -18,35 +18,38 @@ export function Footer() {
           }}
         >
           <Box sx={{ maxWidth: 720 }}>
-            <Typography variant="body2" color="text.secondary">
-              © {new Date().getFullYear()} {siteConfig.brandName}
+            <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.55 }}>
+              © {new Date().getFullYear()} {siteConfig.brandName} · {siteConfig.siteDomain} ·{" "}
+              <Link href={`mailto:${siteConfig.contactEmail}`}>{siteConfig.contactEmail}</Link>
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              {siteConfig.siteDomain} • {siteConfig.city} • {siteConfig.contactEmail}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5, lineHeight: 1.6 }}>
-              {legalConfig.operatorName} · ИНН {legalConfig.inn} · КПП {legalConfig.kpp} · ОГРН{" "}
-              {legalConfig.ogrn}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, lineHeight: 1.6 }}>
-              Юр. адрес: {legalConfig.legalAddress}
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 0.75, display: "block", lineHeight: 1.55, fontSize: "0.75rem" }}
+            >
+              {legalConfig.operatorName} · ИНН {legalConfig.inn} · ОГРН {legalConfig.ogrn}
             </Typography>
             <Typography
               variant="caption"
               color="text.secondary"
               component="p"
-              sx={{ mt: 1.5, display: "block", lineHeight: 1.65 }}
+              sx={{
+                mt: 1,
+                display: "block",
+                lineHeight: 1.5,
+                fontSize: "0.6875rem",
+                maxWidth: 640,
+              }}
             >
-              CRM Flow 24 — независимая компания, оказывающая услуги по настройке и сопровождению
-              Битрикс24. «Bitrix24» и «Битрикс24» — товарные знаки ООО «1С-Битрикс». Сайт не является
-              официальным сайтом Битрикс24.
+              CRM Flow 24 — независимая компания по настройке и сопровождению Битрикс24. «Bitrix24» — товарный знак ООО
+              «1С-Битрикс». Сайт не является официальным ресурсом Битрикс24.
             </Typography>
           </Box>
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
-              gap: 1.25,
+              gap: 1,
               alignItems: { xs: "flex-start", md: "flex-end" },
             }}
           >
@@ -57,10 +60,18 @@ export function Footer() {
               <Link href="/contacts">Контакты</Link>
             </Box>
             <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", alignItems: "center" }}>
-              <Link href="/privacy">Политика ПДн</Link>
-              <Link href="/cookies">Cookies</Link>
-              <Link href="/consent">Согласие</Link>
-              <Link href="/terms">Terms</Link>
+              <Link href="/privacy" style={{ fontSize: "0.8125rem" }}>
+                Политика ПДн
+              </Link>
+              <Link href="/cookies" style={{ fontSize: "0.8125rem" }}>
+                Cookies
+              </Link>
+              <Link href="/consent" style={{ fontSize: "0.8125rem" }}>
+                Согласие
+              </Link>
+              <Link href="/terms" style={{ fontSize: "0.8125rem" }}>
+                Terms
+              </Link>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
               <FooterCookieSettingsButton />

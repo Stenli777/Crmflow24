@@ -1,10 +1,34 @@
-import { Box, Card, CardContent, Chip, Stack, Typography } from "@mui/material";
+import type { Metadata } from "next";
+import {
+  Box,
+  Card,
+  CardContent,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
+import TelegramIcon from "@mui/icons-material/Telegram";
+import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Section } from "@/components/Section";
 import { PageHeading } from "@/components/PageHeading";
 import { ContactForm } from "@/components/ContactForm";
+import { CompanyRequisitesFull } from "@/components/CompanyRequisitesFull";
 import { siteConfig } from "@/config/site";
+import { legalConfig } from "@/config/legal";
+
+export const metadata: Metadata = {
+  title: "Контакты",
+  description:
+    "Телефон, email, Telegram, режим работы и реквизиты ООО «Лиса Эдженси». Заявка на аудит CRM через форму.",
+  alternates: { canonical: "/contacts" },
+  openGraph: {
+    title: `Контакты | ${siteConfig.brandName}`,
+    description: "Свяжитесь с CRM Flow 24: заявка, телефон, email и реквизиты.",
+    url: `${siteConfig.siteUrl}/contacts`,
+  },
+};
 
 type ContactsSearchParams = Record<string, string | string[] | undefined>;
 
@@ -25,8 +49,8 @@ export default async function ContactsPage({
       <Header />
       <Section>
         <PageHeading
-          title="Контакты и заявка на консультацию"
-          subtitle="Опишите задачу в свободной форме: текущая воронка, каналы лидов, этапы продаж и что хотите улучшить в первую очередь."
+          title="Контакты"
+          subtitle="Свяжитесь удобным способом или оставьте заявку — ответим в рабочее время и предложим следующий шаг по вашей CRM."
         />
 
         <Box
@@ -38,53 +62,60 @@ export default async function ContactsPage({
             alignItems: "start",
           }}
         >
-          <Box>
-            <Stack spacing={2}>
-              <Card variant="outlined" sx={{ borderRadius: 4 }}>
-                <CardContent>
-                  <Stack spacing={1}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                      Email для заявок
-                    </Typography>
-                    <Typography color="text.secondary">{siteConfig.contactEmail}</Typography>
-                  </Stack>
-                </CardContent>
-              </Card>
-
-              <Card variant="outlined" sx={{ borderRadius: 4 }}>
-                <CardContent>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}>
-                    Что вы получите после первой консультации
+          <Stack spacing={2}>
+            <Card variant="outlined" sx={{ borderRadius: 3 }}>
+              <CardContent>
+                <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>
+                  Связь
+                </Typography>
+                <Stack spacing={1.25} sx={{ color: "text.secondary", lineHeight: 1.65 }}>
+                  <Typography>
+                    Телефон:{" "}
+                    <Link href={`tel:${legalConfig.phoneTel}`} style={{ fontWeight: 600 }}>
+                      {legalConfig.phoneDisplay}
+                    </Link>
                   </Typography>
-                  <Box component="ul" sx={{ pl: 2.5, m: 0 }}>
-                    <li>
-                      <Typography color="text.secondary">
-                        Карту ключевых проблем и потерь в текущем процессе.
-                      </Typography>
-                    </li>
-                    <li>
-                      <Typography color="text.secondary">
-                        План запуска MVP-внедрения с приоритетами.
-                      </Typography>
-                    </li>
-                    <li>
-                      <Typography color="text.secondary">
-                        Оценку интеграций, сроков и необходимых ресурсов.
-                      </Typography>
-                    </li>
+                  <Typography>
+                    Email:{" "}
+                    <Link href={`mailto:${siteConfig.contactEmail}`} style={{ fontWeight: 600 }}>
+                      {siteConfig.contactEmail}
+                    </Link>
+                  </Typography>
+                  <Typography>
+                    Email по персональным данным:{" "}
+                    <Link href={`mailto:${legalConfig.privacyEmail}`} style={{ fontWeight: 600 }}>
+                      {legalConfig.privacyEmail}
+                    </Link>
+                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Typography component="span">Telegram:</Typography>
+                    <IconButton
+                      component="a"
+                      href={legalConfig.telegramUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Написать в Telegram"
+                      color="primary"
+                      size="small"
+                      sx={{ border: "1px solid", borderColor: "divider" }}
+                    >
+                      <TelegramIcon />
+                    </IconButton>
                   </Box>
-                </CardContent>
-              </Card>
+                  <Typography>Режим работы: {legalConfig.workHours}</Typography>
+                  <Typography>Формат работы: {legalConfig.workFormat}</Typography>
+                </Stack>
+              </CardContent>
+            </Card>
 
-              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                <Chip label="Быстрый ответ" />
-                <Chip label="Фокус на продажах" />
-                <Chip label="Поэтапный запуск" />
-              </Box>
-            </Stack>
-          </Box>
+            <Card variant="outlined" sx={{ borderRadius: 3 }}>
+              <CardContent>
+                <CompanyRequisitesFull />
+              </CardContent>
+            </Card>
+          </Stack>
 
-          <Card variant="outlined" sx={{ borderRadius: 4, p: { xs: 2, md: 3 } }}>
+          <Card id="contact-form" variant="outlined" sx={{ borderRadius: 3, p: { xs: 2, md: 3 } }}>
             <ContactForm
               initialUtm={{
                 utm_source: firstParam(sp, "utm_source"),
@@ -102,4 +133,3 @@ export default async function ContactsPage({
     </Box>
   );
 }
-

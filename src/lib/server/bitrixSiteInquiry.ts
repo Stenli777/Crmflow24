@@ -65,7 +65,11 @@ export type SiteInquiryPayload = {
   message: string;
   service: string;
   pageUrl: string;
+  consentPersonalData: boolean;
   consentMarketing: boolean;
+  consentVersion: string;
+  timestamp: string;
+  userAgent: string;
   utm_source: string;
   utm_medium: string;
   utm_campaign: string;
@@ -73,17 +77,54 @@ export type SiteInquiryPayload = {
   utm_term: string;
 };
 
+/** Поля контакта CRM из заявки (trim внутри). PHONE/EMAIL только если непустые в форме. */
+function buildContactCrmFields(p: SiteInquiryPayload): Record<string, unknown> {
+  const name = p.name.trim();
+  const phone = p.phone.trim();
+  const email = p.email.trim();
+  const company = p.company.trim();
+  const message = p.message.trim();
+
+  const fields: Record<string, unknown> = {
+    NAME: name,
+    ASSIGNED_BY_ID: ASSIGNED_BY_ID,
+    COMMENTS: message,
+  };
+  if (company) {
+    fields.COMPANY_TITLE = company;
+  }
+  if (phone) {
+    fields.PHONE = [{ VALUE: phone, VALUE_TYPE: "WORK" }];
+  }
+  if (email) {
+    fields.EMAIL = [{ VALUE: email, VALUE_TYPE: "WORK" }];
+  }
+  return fields;
+}
+
 function buildDealComments(p: SiteInquiryPayload): string {
+  const name = p.name.trim();
+  const phone = p.phone.trim();
+  const email = p.email.trim();
+  const company = p.company.trim();
+  const service = p.service.trim();
+  const pageUrl = p.pageUrl.trim();
+  const message = p.message.trim();
   const lines = [
-    `Имя: ${p.name}`,
-    `Телефон: ${p.phone || "—"}`,
-    `Email: ${p.email || "—"}`,
+    `Имя: ${name}`,
+    `Телефон: ${phone || "—"}`,
+    `Email: ${email || "—"}`,
   ];
-  if (p.company.trim()) lines.push(`Компания: ${p.company.trim()}`);
-  if (p.service.trim()) lines.push(`Услуга: ${p.service.trim()}`);
-  lines.push(`Страница: ${p.pageUrl || "—"}`);
-  lines.push("", "Сообщение:", p.message.trim());
-  lines.push("", `Согласие на рассылку: ${p.consentMarketing ? "да" : "нет"}`);
+  if (company) lines.push(`Компания: ${company}`);
+  if (service) lines.push(`Услуга: ${service}`);
+  lines.push(`Страница: ${pageUrl || "—"}`);
+  lines.push("", "Сообщение:", message);
+  lines.push("", "Согласия и технические данные (сайт):");
+  lines.push(`consentPersonalData: ${p.consentPersonalData ? "да" : "нет"}`);
+  lines.push(`consentMarketing: ${p.consentMarketing ? "да" : "нет"}`);
+  lines.push(`consentVersion: ${p.consentVersion}`);
+  lines.push(`timestamp: ${p.timestamp}`);
+  lines.push(`userAgent: ${p.userAgent || "—"}`);
   return lines.join("\n");
 }
 
@@ -93,7 +134,8 @@ export async function submitSiteInquiryToBitrix(payload: SiteInquiryPayload): Pr
   let contactId: number | null = null;
 
   const phoneTrim = payload.phone.trim();
-  const emailTrim = payload.email.trim().toLowerCase();
+  const emailTrim = payload.email.trim();
+  const emailForDuplicateSearch = emailTrim.toLowerCase();
 
   if (phoneTrim) {
     const dup = await bitrixCall<unknown>(base, "crm.duplicate.findbycomm", {
@@ -104,36 +146,28 @@ export async function submitSiteInquiryToBitrix(payload: SiteInquiryPayload): Pr
     contactId = firstContactIdFromDuplicateResult(dup);
   }
 
-  if (contactId === null && emailTrim) {
+  if (contactId === null && emailForDuplicateSearch) {
     const dup = await bitrixCall<unknown>(base, "crm.duplicate.findbycomm", {
       entity_type: "CONTACT",
       type: "EMAIL",
-      values: [emailTrim],
+      values: [emailForDuplicateSearch],
     });
     contactId = firstContactIdFromDuplicateResult(dup);
   }
 
-  if (contactId === null) {
-    const fields: Record<string, unknown> = {
-      NAME: payload.name.trim(),
-      ASSIGNED_BY_ID: ASSIGNED_BY_ID,
-      COMMENTS: payload.message.trim(),
-    };
-    if (payload.company.trim()) {
-      fields.COMPANY_TITLE = payload.company.trim();
-    }
-    if (phoneTrim) {
-      fields.PHONE = [{ VALUE: phoneTrim, VALUE_TYPE: "WORK" }];
-    }
-    if (emailTrim) {
-      fields.EMAIL = [{ VALUE: emailTrim, VALUE_TYPE: "WORK" }];
-    }
+  const contactFields = buildContactCrmFields(payload);
 
-    const newId = await bitrixCall<number>(base, "crm.contact.add", { fields });
+  if (contactId === null) {
+    const newId = await bitrixCall<number>(base, "crm.contact.add", { fields: contactFields });
     contactId = typeof newId === "number" ? newId : Number(newId);
     if (!Number.isFinite(contactId)) {
       throw new Error("crm.contact.add: некорректный ID контакта");
     }
+  } else {
+    await bitrixCall<boolean>(base, "crm.contact.update", {
+      id: contactId,
+      fields: contactFields,
+    });
   }
 
   const servicePart = payload.service.trim() ? ` — ${payload.service.trim()}` : "";

@@ -1,12 +1,19 @@
+"use client";
+
+import Link from "next/link";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { siteConfig } from "@/config/site";
+
+const defaultContactHref = "/contacts#contact-form";
 
 export function CtaBanner({
   title,
   text,
+  contactHref = defaultContactHref,
 }: {
   title: string;
   text: string;
+  contactHref?: string;
 }) {
   return (
     <Box
@@ -29,7 +36,8 @@ export function CtaBanner({
         </Typography>
         <Box sx={{ display: "flex", gap: 1.25, flexWrap: "wrap", mt: 1 }}>
           <Button
-            href="/contacts"
+            component={Link}
+            href={contactHref}
             variant="contained"
             size="large"
             sx={{ textTransform: "none", fontWeight: 700 }}
@@ -37,6 +45,7 @@ export function CtaBanner({
             {siteConfig.primaryCta}
           </Button>
           <Button
+            component={Link}
             href="/cases"
             variant="outlined"
             size="large"

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Box, Stack, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import { LegalPageShell } from "@/components/legal/LegalPageShell";
 import { LegalDocFooterLinks } from "@/components/legal/LegalDocFooterLinks";

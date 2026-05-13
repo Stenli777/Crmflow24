@@ -1,5 +1,5 @@
 /**
- * Реквизиты оператора ПДн и юридические контакты (публикуются на сайте).
+ * Реквизиты оператора ПДн, контакты и версия согласий (публикуются на сайте).
  */
 export const legalConfig = {
   operatorName: "ООО «Лиса Эдженси»",
@@ -10,6 +10,26 @@ export const legalConfig = {
   ogrn: "1207800025290",
   /** Запросы субъектов ПДн и вопросы по политике */
   privacyEmail: "privacy@crmflow24.ru",
-  policyVersion: "1.0",
-  policyEffectiveDate: "2026-05-12",
+  /** Заявки и общая связь */
+  contactEmail: "info@crmflow24.ru",
+  phoneDisplay: "+7 (981) 763-96-61",
+  phoneTel: "+79817639661",
+  telegramUrl: "https://t.me/AlekseySten",
+  /** Профиль в каталоге партнёров 1С-Битрикс */
+  bitrixPartnerProfileUrl: "https://www.bitrix24.ru/partners/partner/14526126/",
+  businessPartnerSinceYear: 2020,
+  /** Фактическое число завершённых/ведущихся проектов по данным владельца */
+  projectsCount: 35,
+  workSinceYear: 2020,
+  longestClientYearsMin: 5,
+  workHours: "пн–пт, 10:00–19:00 МСК",
+  workFormat: "удалённо с компаниями по РФ",
+  industriesLine:
+    "строительство, недвижимость, майнинг-оборудование, арендный бизнес, продажа автозапчастей, протезирование",
+  /** Версия текстов согласий для CRM и политики */
+  consentVersion: "1.1",
+  policyVersion: "1.1",
+  policyEffectiveDate: "2026-05-13",
+  /** Хостинг и сервисы (для политики ПДн / cookie) */
+  hostingProvider: "REG.RU",
 } as const;

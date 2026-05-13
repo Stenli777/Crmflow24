@@ -7,7 +7,7 @@ export const siteConfig = {
   siteUrl: "https://crmflow24.ru",
   /** Домен без схемы — для подписей, mailto, текста */
   siteDomain: "crmflow24.ru",
-  primaryCta: "Разобрать вашу CRM",
+  primaryCta: "Получить аудит CRM",
   contactEmail: "info@crmflow24.ru",
   city: "Россия",
 } as const;

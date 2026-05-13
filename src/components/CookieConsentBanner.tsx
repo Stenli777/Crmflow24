@@ -34,7 +34,8 @@ export function CookieConsentBanner() {
 
   useEffect(() => {
     if (!cookieDialogOpen) return;
-    setDraftAnalytics(consent?.analytics ?? true);
+    // Синхронизируем переключатель с последним сохранённым согласием при открытии диалога.
+    queueMicrotask(() => setDraftAnalytics(consent?.analytics ?? true));
   }, [cookieDialogOpen, consent]);
 
   return (

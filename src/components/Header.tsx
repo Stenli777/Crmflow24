@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
+import useScrollTrigger from "@mui/material/useScrollTrigger";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -27,16 +28,20 @@ const items: Array<{ label: string; href: string }> = [
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const scrolled = useScrollTrigger({ disableHysteresis: true, threshold: 6 });
 
   return (
     <AppBar
       position="sticky"
       elevation={0}
       sx={{
-        bgcolor: "rgba(255,255,255,0.75)",
+        top: 0,
+        zIndex: (theme) => theme.zIndex.appBar,
+        bgcolor: scrolled ? "rgba(255,255,255,0.88)" : "rgba(255,255,255,0.72)",
         color: "text.primary",
-        backdropFilter: "blur(12px)",
+        backdropFilter: scrolled ? "blur(18px)" : "blur(12px)",
         borderBottom: "1px solid rgba(0,0,0,0.08)",
+        transition: "background-color 160ms ease, backdrop-filter 160ms ease",
       }}
     >
       <Container maxWidth="lg">
@@ -96,7 +101,7 @@ export function Header() {
               <Button
                 variant="contained"
                 component={Link}
-                href="/contacts"
+                href="/contacts#contact-form"
                 sx={{ textTransform: "none", fontWeight: 700 }}
               >
                 {siteConfig.primaryCta}

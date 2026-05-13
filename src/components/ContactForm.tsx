@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { legalConfig } from "@/config/legal";
 
 const UTM_STORAGE_KEY = "crmflow_utm";
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const;
@@ -60,6 +61,8 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
     email: "",
     message: "",
   });
+  const [messageBlurred, setMessageBlurred] = useState(false);
+  const [_trap, setTrap] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [consentPd, setConsentPd] = useState(false);
   const [consentMarketing, setConsentMarketing] = useState(false);
@@ -93,11 +96,14 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
     !errors.phone &&
     !errors.message;
 
+  const showMessageError = (submitted || messageBlurred) && Boolean(errors.message);
+
   const canSubmit = consentPd && fieldsOk;
 
   return (
     <Box
       component="form"
+      sx={{ position: "relative" }}
       onSubmit={async (e) => {
         e.preventDefault();
         setSubmitted(true);
@@ -121,8 +127,11 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
               message: form.message,
               service: serviceFromQuery,
               pageUrl,
+              consentPersonalData: true,
               consentPd: true,
               consentMarketing,
+              consentVersion: legalConfig.consentVersion,
+              _trap,
               ...utm,
             }),
           });
@@ -139,6 +148,8 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
           setConsentPd(false);
           setConsentMarketing(false);
           setSubmitted(false);
+          setMessageBlurred(false);
+          setTrap("");
         } catch {
           setSubmitError(true);
         } finally {
@@ -148,12 +159,24 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
       noValidate
     >
       <Stack spacing={2.25}>
+        <Box
+          aria-hidden
+          sx={{ position: "absolute", left: -9999, top: 0, width: 1, height: 1, overflow: "hidden" }}
+        >
+          <input
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            value={_trap}
+            onChange={(e) => setTrap(e.target.value)}
+          />
+        </Box>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700 }}>
             Запишитесь на консультацию
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, lineHeight: 1.6 }}>
-            Опишите задачу — мы ответим и предложим план внедрения.
+            Укажите телефон или email и коротко опишите задачу — ответим и предложим следующий шаг.
           </Typography>
         </Box>
 
@@ -165,7 +188,7 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
 
         {submitError ? (
           <Alert severity="error" onClose={() => setSubmitError(false)}>
-            Не удалось отправить заявку. Попробуйте позже или напишите на email из блока слева.
+            Не удалось отправить заявку. Попробуйте через минуту, позже или напишите на email из блока слева.
           </Alert>
         ) : null}
 
@@ -218,8 +241,9 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
           label="Коротко о задаче"
           value={form.message}
           onChange={(e) => setForm((s) => ({ ...s, message: e.target.value }))}
-          error={submitted && Boolean(errors.message)}
-          helperText={(submitted && errors.message) || " "}
+          onBlur={() => setMessageBlurred(true)}
+          error={showMessageError}
+          helperText={(showMessageError && errors.message) || " "}
           minRows={4}
           multiline
           fullWidth

@@ -42,8 +42,10 @@ export function CookieConsentProvider({ children }: { children: React.ReactNode 
   const [cookieDialogOpen, setCookieDialogOpen] = useState(false);
 
   useEffect(() => {
-    setConsent(readStoredCookieConsent());
-    setHydrated(true);
+    queueMicrotask(() => {
+      setConsent(readStoredCookieConsent());
+      setHydrated(true);
+    });
   }, []);
 
   const persist = useCallback((next: StoredCookieConsent) => {
