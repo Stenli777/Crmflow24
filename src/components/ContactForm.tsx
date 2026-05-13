@@ -4,6 +4,7 @@ import {
   Alert,
   Box,
   Button,
+  CircularProgress,
   FormControlLabel,
   Checkbox,
   Link as MuiLink,
@@ -13,7 +14,17 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { siteConfig } from "@/config/site";
+
+const UTM_STORAGE_KEY = "crmflow_utm";
+const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const;
+
+export type ContactFormInitialUtm = Partial<Record<(typeof UTM_KEYS)[number], string>>;
+
+export type ContactFormProps = {
+  initialUtm?: ContactFormInitialUtm;
+  /** Тема/услуга из query (?service= / ?topic=) */
+  serviceFromQuery?: string;
+};
 
 type FormState = {
   name: string;
@@ -23,27 +34,25 @@ type FormState = {
   message: string;
 };
 
-/** Сохранено для будущей интеграции CRM / почты; не вызывается из submit (см. integration-status.md). */
-function buildMailtoPayload(form: FormState) {
-  const subject = `Заявка на консультацию: ${form.name || "без имени"}`;
-  const body = [
-    "Заявка с сайта",
-    "",
-    `Имя: ${form.name || "-"}`,
-    `Компания: ${form.company || "-"}`,
-    `Телефон: ${form.phone || "-"}`,
-    `Email: ${form.email || "-"}`,
-    "",
-    "Сообщение:",
-    form.message || "-",
-    "",
-    "---",
-    `Отправлено с сайта ${siteConfig.siteDomain}`,
-  ].join("\n");
-  return { subject, body, mailto: `mailto:${siteConfig.contactEmail}?${new URLSearchParams({ subject, body }).toString()}` };
+function mergeUtmsForSubmit(initial: ContactFormProps["initialUtm"]): Record<(typeof UTM_KEYS)[number], string> {
+  let stored: Partial<Record<(typeof UTM_KEYS)[number], string>> = {};
+  try {
+    stored = JSON.parse(sessionStorage.getItem(UTM_STORAGE_KEY) || "{}");
+  } catch {
+    /* noop */
+  }
+  const fromUrl = new URLSearchParams(window.location.search);
+  const out = {} as Record<(typeof UTM_KEYS)[number], string>;
+  for (const k of UTM_KEYS) {
+    const fromQuery = fromUrl.get(k)?.trim() || "";
+    const fromStore = String(stored[k] ?? "").trim();
+    const fromServer = initial?.[k]?.trim() || "";
+    out[k] = fromQuery || fromStore || fromServer || "";
+  }
+  return out;
 }
 
-export function ContactForm() {
+export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormProps) {
   const [form, setForm] = useState<FormState>({
     name: "",
     company: "",
@@ -54,7 +63,9 @@ export function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [consentPd, setConsentPd] = useState(false);
   const [consentMarketing, setConsentMarketing] = useState(false);
-  const [mockSuccess, setMockSuccess] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const errors = useMemo(() => {
     const emailOk =
@@ -87,19 +98,52 @@ export function ContactForm() {
   return (
     <Box
       component="form"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
         setSubmitted(true);
+        setSubmitError(false);
         if (!canSubmit) return;
-        const payload = {
-          form,
-          consentPd,
-          consentMarketing,
-          mailtoPreview: buildMailtoPayload(form),
-        };
-        // Mock: реальная отправка — TODO (CRM-форма Битрикс24), см. project-docs/private-audit/integration-status.md
-        console.info("[ContactForm] mock submit", payload);
-        setMockSuccess(true);
+
+        setIsSubmitting(true);
+        try {
+          const utm = mergeUtmsForSubmit(initialUtm);
+          const pageUrl =
+            typeof window !== "undefined" ? `${window.location.origin}${window.location.pathname}${window.location.search}` : "";
+
+          const res = await fetch("/api/contact", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify({
+              name: form.name,
+              company: form.company,
+              phone: form.phone,
+              email: form.email,
+              message: form.message,
+              service: serviceFromQuery,
+              pageUrl,
+              consentPd: true,
+              consentMarketing,
+              ...utm,
+            }),
+          });
+
+          const data = (await res.json().catch(() => ({}))) as { ok?: boolean };
+
+          if (!res.ok || !data.ok) {
+            setSubmitError(true);
+            return;
+          }
+
+          setSubmitSuccess(true);
+          setForm({ name: "", company: "", phone: "", email: "", message: "" });
+          setConsentPd(false);
+          setConsentMarketing(false);
+          setSubmitted(false);
+        } catch {
+          setSubmitError(true);
+        } finally {
+          setIsSubmitting(false);
+        }
       }}
       noValidate
     >
@@ -113,14 +157,19 @@ export function ContactForm() {
           </Typography>
         </Box>
 
-        {mockSuccess ? (
-          <Alert severity="success">
-            Заявка принята (демо-режим: данные не отправлены на сервер). Подключение CRM-формы Битрикс24 —
-            в работе.
+        {submitSuccess ? (
+          <Alert severity="success" onClose={() => setSubmitSuccess(false)}>
+            Заявка отправлена. Мы свяжемся с вами по указанным контактам.
           </Alert>
         ) : null}
 
-        {submitted && !canSubmit && !mockSuccess ? (
+        {submitError ? (
+          <Alert severity="error" onClose={() => setSubmitError(false)}>
+            Не удалось отправить заявку. Попробуйте позже или напишите на email из блока слева.
+          </Alert>
+        ) : null}
+
+        {submitted && !canSubmit && !submitSuccess ? (
           <Alert severity="warning">
             Проверьте поля формы и отметьте обязательное согласие на обработку персональных данных.
           </Alert>
@@ -133,14 +182,14 @@ export function ContactForm() {
             value={form.name}
             onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))}
             fullWidth
-            disabled={mockSuccess}
+            disabled={isSubmitting}
           />
           <TextField
             label="Компания"
             value={form.company}
             onChange={(e) => setForm((s) => ({ ...s, company: e.target.value }))}
             fullWidth
-            disabled={mockSuccess}
+            disabled={isSubmitting}
           />
         </Stack>
 
@@ -152,7 +201,7 @@ export function ContactForm() {
             error={submitted && Boolean(errors.phone)}
             helperText={(submitted && errors.phone) || " "}
             fullWidth
-            disabled={mockSuccess}
+            disabled={isSubmitting}
           />
           <TextField
             label="Email"
@@ -161,7 +210,7 @@ export function ContactForm() {
             error={submitted && Boolean(errors.email)}
             helperText={(submitted && errors.email) || " "}
             fullWidth
-            disabled={mockSuccess}
+            disabled={isSubmitting}
           />
         </Stack>
 
@@ -174,7 +223,7 @@ export function ContactForm() {
           minRows={4}
           multiline
           fullWidth
-          disabled={mockSuccess}
+          disabled={isSubmitting}
         />
 
         <FormControlLabel
@@ -182,7 +231,7 @@ export function ContactForm() {
             <Checkbox
               checked={consentPd}
               onChange={(e) => setConsentPd(e.target.checked)}
-              disabled={mockSuccess}
+              disabled={isSubmitting}
             />
           }
           label={
@@ -211,7 +260,7 @@ export function ContactForm() {
             <Checkbox
               checked={consentMarketing}
               onChange={(e) => setConsentMarketing(e.target.checked)}
-              disabled={mockSuccess}
+              disabled={isSubmitting}
             />
           }
           label={
@@ -231,15 +280,15 @@ export function ContactForm() {
           для обработки обращения и не передаются третьим лицам, кроме случаев, указанных в Политике.
         </Typography>
 
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ alignItems: "center" }}>
           <Button
             type="submit"
             variant="contained"
             size="large"
-            disabled={!consentPd || mockSuccess}
+            disabled={!consentPd || isSubmitting}
             sx={{ textTransform: "none", fontWeight: 700 }}
           >
-            Отправить заявку
+            {isSubmitting ? <CircularProgress size={22} color="inherit" /> : "Отправить заявку"}
           </Button>
         </Stack>
 
@@ -248,7 +297,7 @@ export function ContactForm() {
           <MuiLink component={Link} href="/cookies">
             /cookies
           </MuiLink>
-          . Отправка через почтовый клиент (mailto) отключена до интеграции с CRM.
+          . Заявка уходит на сервер сайта и создаётся в CRM Bitrix24.
         </Typography>
       </Stack>
     </Box>

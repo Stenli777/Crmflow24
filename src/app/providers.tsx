@@ -2,9 +2,11 @@
 
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import type { PropsWithChildren } from "react";
+import { Suspense } from "react";
 import { CookieConsentProvider } from "@/context/CookieConsentContext";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { YandexMetrika } from "@/components/YandexMetrika";
+import { UtmSessionBridge } from "@/components/UtmSessionBridge";
 
 const theme = createTheme({
   shape: { borderRadius: 16 },
@@ -164,6 +166,9 @@ export function Providers({ children }: PropsWithChildren) {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <CookieConsentProvider>
+        <Suspense fallback={null}>
+          <UtmSessionBridge />
+        </Suspense>
         {children}
         <CookieConsentBanner />
         <YandexMetrika />

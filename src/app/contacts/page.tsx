@@ -6,7 +6,20 @@ import { PageHeading } from "@/components/PageHeading";
 import { ContactForm } from "@/components/ContactForm";
 import { siteConfig } from "@/config/site";
 
-export default function ContactsPage() {
+type ContactsSearchParams = Record<string, string | string[] | undefined>;
+
+function firstParam(sp: ContactsSearchParams, key: string): string {
+  const v = sp[key];
+  if (Array.isArray(v)) return (v[0] ?? "").trim();
+  return (v ?? "").trim();
+}
+
+export default async function ContactsPage({
+  searchParams,
+}: {
+  searchParams: Promise<ContactsSearchParams>;
+}) {
+  const sp = await searchParams;
   return (
     <Box sx={{ minHeight: "100vh" }}>
       <Header />
@@ -72,7 +85,16 @@ export default function ContactsPage() {
           </Box>
 
           <Card variant="outlined" sx={{ borderRadius: 4, p: { xs: 2, md: 3 } }}>
-            <ContactForm />
+            <ContactForm
+              initialUtm={{
+                utm_source: firstParam(sp, "utm_source"),
+                utm_medium: firstParam(sp, "utm_medium"),
+                utm_campaign: firstParam(sp, "utm_campaign"),
+                utm_content: firstParam(sp, "utm_content"),
+                utm_term: firstParam(sp, "utm_term"),
+              }}
+              serviceFromQuery={firstParam(sp, "service") || firstParam(sp, "topic")}
+            />
           </Card>
         </Box>
       </Section>
