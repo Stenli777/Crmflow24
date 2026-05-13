@@ -17,7 +17,7 @@ export default function AboutPage() {
         />
 
         <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 2 }}>
-          <Chip label="Bitrix24 integration" />
+          <Chip label="Интеграции и внешние системы" />
           <Chip label="Телефония и мессенджеры" />
           <Chip label="Воронки и бизнес-процессы" />
           <Chip label="REST API и отчеты" />

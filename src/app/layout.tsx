@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+  },
   openGraph: {
     type: "website",
     locale: "ru_RU",
@@ -29,6 +32,12 @@ export const metadata: Metadata = {
     title: `${siteConfig.brandTagline} — ${siteConfig.brandName}`,
     description:
       "Настраиваем Bitrix24 под процессы: воронки, телефония, мессенджеры, автоматизации, отчёты и интеграции.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteConfig.brandTagline} — ${siteConfig.brandName}`,
+    description:
+      "Внедрение и интеграция Bitrix24: воронки, телефония, автоматизации и отчёты.",
   },
 };
 

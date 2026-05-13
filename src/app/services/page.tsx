@@ -13,7 +13,7 @@ export default function ServicesPage() {
       <Section>
         <PageHeading
           title="Услуги внедрения и интеграции Bitrix24"
-          subtitle="Собрали структуру по лучшим паттернам рынка: каждая услуга описана через выгоду, внедрение и итог для бизнеса."
+          subtitle="Каждая услуга описана через задачу клиента, этапы внедрения и ожидаемый эффект для продаж и сервиса."
         />
         <ServicesGrid />
         <Typography color="text.secondary" sx={{ mt: 2.5 }}>

@@ -2,6 +2,9 @@
 
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import type { PropsWithChildren } from "react";
+import { CookieConsentProvider } from "@/context/CookieConsentContext";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
+import { YandexMetrika } from "@/components/YandexMetrika";
 
 const theme = createTheme({
   shape: { borderRadius: 16 },
@@ -160,7 +163,11 @@ export function Providers({ children }: PropsWithChildren) {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {children}
+      <CookieConsentProvider>
+        {children}
+        <CookieConsentBanner />
+        <YandexMetrika />
+      </CookieConsentProvider>
     </ThemeProvider>
   );
 }
