@@ -5,7 +5,6 @@ import {
   Box,
   Card,
   CardContent,
-  Link as MuiLink,
   Stack,
   Typography,
 } from "@mui/material";
@@ -14,7 +13,6 @@ import { Footer } from "@/components/Footer";
 import { Section } from "@/components/Section";
 import { CtaBanner } from "@/components/CtaBanner";
 import { CompanyRequisitesFull } from "@/components/CompanyRequisitesFull";
-import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { legalConfig } from "@/config/legal";
 
 const border = "1px solid rgba(15, 23, 42, 0.08)";
@@ -54,26 +52,9 @@ export function AboutPageClient() {
           реальные процессы продаж, сервиса и управления.
         </Typography>
 
-        <Box sx={{ mt: 2.5, maxWidth: 560 }}>
-          <MediaPlaceholder
-            label="Сюда можно добавить фото команды или офиса"
-            aspectRatio="16 / 9"
-            minHeight={{ xs: 120, md: 140 }}
-          />
-        </Box>
-
         <Stack spacing={1.25} sx={{ mt: 2.5, maxWidth: 900 }}>
           <Typography color="text.secondary" sx={{ lineHeight: 1.7 }}>
-            Бизнес-партнёр Битрикс24 с {legalConfig.businessPartnerSinceYear} года. Профиль в каталоге партнёров:{" "}
-            <MuiLink
-              href={legalConfig.bitrixPartnerProfileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{ fontWeight: 600 }}
-            >
-              {legalConfig.bitrixPartnerProfileUrl}
-            </MuiLink>
-            .
+            Бизнес-партнёр Битрикс24 с {legalConfig.businessPartnerSinceYear} года.
           </Typography>
           <Typography color="text.secondary" sx={{ lineHeight: 1.7 }}>
             С {legalConfig.workSinceYear} года реализовано {legalConfig.projectsCount} проектов. Самый долгий клиент

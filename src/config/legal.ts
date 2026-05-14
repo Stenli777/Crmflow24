@@ -22,8 +22,6 @@ export const legalConfig = {
   phoneDisplay: "+7 (981) 763-96-61",
   phoneTel: "+79817639661",
   telegramUrl: "https://t.me/AlekseySten",
-  /** Профиль в каталоге партнёров 1С-Битрикс */
-  bitrixPartnerProfileUrl: "https://www.bitrix24.ru/partners/partner/14526126/",
   businessPartnerSinceYear: 2020,
   /** Фактическое число завершённых/ведущихся проектов по данным владельца */
   projectsCount: 35,

@@ -20,7 +20,6 @@ export function buildOrganizationJsonLd() {
       postalCode: legalConfig.addressStructured.postalCode,
       addressCountry: legalConfig.addressStructured.addressCountry,
     },
-    sameAs: [legalConfig.bitrixPartnerProfileUrl],
   };
 }
 

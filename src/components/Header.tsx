@@ -73,7 +73,11 @@ export function Header() {
               >
                 <Box
                   sx={{
-                    transition: "transform 220ms ease",
+                    position: "relative",
+                    flexShrink: 0,
+                    height: scrolled ? 34 : 40,
+                    width: scrolled ? 83 : 97,
+                    transition: "transform 220ms ease, height 220ms ease, width 220ms ease",
                     transform: scrolled ? "scale(0.94)" : "scale(1)",
                     transformOrigin: "left center",
                   }}
@@ -81,17 +85,10 @@ export function Header() {
                   <Image
                     src="/images/logo.png"
                     alt=""
-                    width={175}
-                    height={72}
+                    fill
                     priority
-                    sizes="(max-width: 900px) 132px, 175px"
-                    style={{
-                      height: scrolled ? 34 : 40,
-                      width: "auto",
-                      maxWidth: "min(100%, 175px)",
-                      display: "block",
-                      transition: "height 220ms ease, max-width 220ms ease",
-                    }}
+                    sizes="100px"
+                    style={{ objectFit: "contain", objectPosition: "left center" }}
                   />
                 </Box>
               </Link>

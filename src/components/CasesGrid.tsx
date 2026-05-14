@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, Chip, Stack, Typography } from "@mui/material";
-import Image from "next/image";
 import { cases } from "@/content/site-content";
+import { CaseStudyBody } from "@/components/CaseStudyBody";
 
 export function CasesGrid({ limit }: { limit?: number }) {
   const list = typeof limit === "number" ? cases.slice(0, limit) : cases;
@@ -29,56 +29,15 @@ export function CasesGrid({ limit }: { limit?: number }) {
             },
           }}
         >
-          <Box sx={{ p: 1.5, pb: 0 }}>
-            <Image
-              src="/images/case-placeholder.svg"
-              alt={`Иллюстрация кейса: ${item.title}`}
-              width={800}
-              height={460}
-              style={{
-                width: "100%",
-                height: "auto",
-                borderRadius: 14,
-                filter: "saturate(1.04) contrast(1.02)",
-              }}
-            />
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ display: "block", mt: 1, textAlign: "center", lineHeight: 1.45, fontWeight: 600 }}
-            >
-              Сюда можно добавить изображение проекта
-            </Typography>
-          </Box>
-          <CardContent>
-            <Stack spacing={1.2}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+          <CardContent sx={{ pt: 2.5 }}>
+            <Stack spacing={1.25}>
+              <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1, flexWrap: "wrap" }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, flex: "1 1 240px" }}>
                   {item.title}
                 </Typography>
-                <Chip size="small" label={item.niche} />
+                <Chip size="small" label={item.niche} sx={{ alignSelf: "flex-start" }} />
               </Box>
-              <Typography>
-                <b>Задача:</b> {item.problem}
-              </Typography>
-              <Typography>
-                <b>Решение:</b> {item.solution}
-              </Typography>
-              <Box>
-                <Typography sx={{ fontWeight: 700, mb: 0.5 }}>Результат:</Typography>
-                <Box component="ul" sx={{ pl: 2.5, m: 0, color: "text.secondary" }}>
-                  {item.result.map((line) => (
-                    <li key={line}>
-                      <Typography color="text.secondary">{line}</Typography>
-                    </li>
-                  ))}
-                </Box>
-              </Box>
-              <Box sx={{ display: "flex", gap: 0.8, flexWrap: "wrap", pt: 0.6 }}>
-                {item.result.slice(0, 2).map((metric) => (
-                  <Chip key={metric} size="small" color="primary" variant="outlined" label={metric} />
-                ))}
-              </Box>
+              <CaseStudyBody item={item} dense />
             </Stack>
           </CardContent>
         </Card>
@@ -86,4 +45,3 @@ export function CasesGrid({ limit }: { limit?: number }) {
     </Box>
   );
 }
-

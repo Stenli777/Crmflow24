@@ -7,7 +7,6 @@ import {
   Box,
   Button,
   Container,
-  Link as MuiLink,
   Paper,
   Stack,
   Typography,
@@ -20,16 +19,10 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Section } from "@/components/Section";
 import { ServicesGrid } from "@/components/ServicesGrid";
+import { CasesGrid } from "@/components/CasesGrid";
 import { StagesGrid } from "@/components/StagesGrid";
 import { CtaBanner } from "@/components/CtaBanner";
-import { MediaPlaceholder } from "@/components/MediaPlaceholder";
-import {
-  bitrixAssembly,
-  bitrixConnectItems,
-  clientPainPoints,
-  faqs,
-  homePageCases,
-} from "@/content/site-content";
+import { bitrixAssembly, bitrixConnectItems, clientPainPoints, faqs } from "@/content/site-content";
 import { siteConfig } from "@/config/site";
 import { legalConfig } from "@/config/legal";
 
@@ -138,32 +131,21 @@ export function HomePage() {
                 }}
               >
                 <Stack spacing={1.25}>
-                  <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 1 }}>
-                    <Box
-                      sx={{
-                        px: 1.15,
-                        py: 0.45,
-                        borderRadius: "999px",
-                        border: "1px solid rgba(46, 125, 255, 0.28)",
-                        bgcolor: "rgba(46, 125, 255, 0.08)",
-                        fontSize: "0.75rem",
-                        fontWeight: 800,
-                        letterSpacing: "0.04em",
-                        color: "primary.main",
-                        lineHeight: 1.35,
-                      }}
-                    >
-                      Бизнес-партнёр Битрикс24
-                    </Box>
-                    <MuiLink
-                      href={legalConfig.bitrixPartnerProfileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      underline="hover"
-                      sx={{ fontSize: "0.8125rem", fontWeight: 700, color: "text.primary" }}
-                    >
-                      Профиль в каталоге партнёров ↗
-                    </MuiLink>
+                  <Box
+                    sx={{
+                      px: 1.15,
+                      py: 0.45,
+                      borderRadius: "999px",
+                      border: "1px solid rgba(46, 125, 255, 0.28)",
+                      bgcolor: "rgba(46, 125, 255, 0.08)",
+                      fontSize: "0.75rem",
+                      fontWeight: 800,
+                      letterSpacing: "0.04em",
+                      color: "primary.main",
+                      lineHeight: 1.35,
+                    }}
+                  >
+                    Бизнес-партнёр Битрикс24
                   </Box>
                   <Typography sx={{ fontSize: "0.9375rem", fontWeight: 700, lineHeight: 1.45, color: "text.primary" }}>
                     {legalConfig.projectsCount} проектов • работа с {legalConfig.workSinceYear} года • сопровождение
@@ -327,14 +309,6 @@ export function HomePage() {
               </Paper>
             </Box>
           </Box>
-
-          <Box sx={{ mt: { xs: 3, md: 4 }, maxWidth: 960, mx: "auto" }}>
-            <MediaPlaceholder
-              label="Сюда можно добавить скриншот CRM"
-              aspectRatio="21 / 9"
-              minHeight={{ xs: 100, md: 120 }}
-            />
-          </Box>
         </Container>
       </Box>
 
@@ -465,70 +439,10 @@ export function HomePage() {
       <Section id="cases" tone="muted">
         <SectionHeading
           kicker="Кейсы"
-          title="Как это выглядит в проектах"
-          subtitle="Коротко: что было, что сделали, что изменилось. Без «маркетинговых» цифр — спокойные формулировки, которые ближе к реальной жизни внедрения."
+          title="Внедрение Bitrix24: примеры проектов"
+          subtitle="Два реальных кейса CRM Flow24 — производство и строительство: задача, что сделали, результат. Без выдуманных процентов роста."
         />
-        <Box sx={{ mb: 2.5 }}>
-          <MediaPlaceholder label="Сюда можно добавить изображение проекта" aspectRatio="16 / 9" />
-        </Box>
-        <Stack spacing={2.5}>
-          {homePageCases.map((item) => (
-            <Paper
-              key={item.title}
-              elevation={0}
-              sx={{
-                borderRadius: r,
-                border: border,
-                bgcolor: "#ffffff",
-                p: { xs: 2.25, md: 3 },
-                boxShadow: shadowCard,
-              }}
-            >
-              <Stack spacing={2}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", gap: 1.5, flexWrap: "wrap" }}>
-                  <Box>
-                    <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                      {item.title}
-                    </Typography>
-                    <Typography sx={{ mt: 0.5, fontSize: "0.875rem", color: "text.secondary" }}>{item.niche}</Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 1.5 }}>
-                  <Box sx={{ p: 2, borderRadius: r, border: border, bgcolor: "#f8fafc" }}>
-                    <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "text.secondary", mb: 0.75 }}>
-                      Было
-                    </Typography>
-                    <Typography sx={{ color: "text.secondary", lineHeight: 1.6 }}>{item.before}</Typography>
-                  </Box>
-                  <Box sx={{ p: 2, borderRadius: r, border: "1px solid rgba(46, 125, 255, 0.18)", bgcolor: "rgba(46,125,255,0.04)" }}>
-                    <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "text.secondary", mb: 0.75 }}>
-                      Сделали
-                    </Typography>
-                    <Typography sx={{ color: "text.secondary", lineHeight: 1.6 }}>{item.done}</Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ p: 2, borderRadius: r, border: border, bgcolor: "#ffffff" }}>
-                  <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "text.secondary", mb: 0.75 }}>
-                    Что изменилось
-                  </Typography>
-                  <Typography sx={{ fontWeight: 600, lineHeight: 1.55 }}>{item.changed}</Typography>
-                </Box>
-                <Box>
-                  <Typography sx={{ fontSize: "0.75rem", fontWeight: 700, color: "text.secondary", mb: 0.75 }}>
-                    Результат
-                  </Typography>
-                  <Box component="ul" sx={{ m: 0, pl: 2.25, color: "text.secondary" }}>
-                    {item.outcome.map((line) => (
-                      <li key={line}>
-                        <Typography sx={{ lineHeight: 1.6 }}>{line}</Typography>
-                      </li>
-                    ))}
-                  </Box>
-                </Box>
-              </Stack>
-            </Paper>
-          ))}
-        </Stack>
+        <CasesGrid limit={2} />
         <Box sx={{ mt: 2.5 }}>
           <Button component={Link} href="/cases" sx={{ fontWeight: 700 }}>
             Все кейсы
@@ -542,9 +456,6 @@ export function HomePage() {
           title="Как работаем"
           subtitle="Понятные этапы и согласование приоритетов: от разбора процесса до сопровождения после запуска."
         />
-        <Box sx={{ mb: 2.5 }}>
-          <MediaPlaceholder label="Сюда можно добавить схему процесса" aspectRatio="16 / 9" />
-        </Box>
         <StagesGrid />
         <Typography
           color="text.secondary"
