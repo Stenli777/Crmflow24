@@ -11,7 +11,7 @@ import { siteConfig } from "@/config/site";
 export const metadata: Metadata = {
   title: "Кейсы внедрения Bitrix24",
   description:
-    "Реальные проекты CRM Flow24: Bitrix24 для продаж, производства, строительства, коммуникаций, аналитики и внутренних процессов.",
+    "Пять реальных проектов CRM Flow24: производство, строительство, IT, e‑commerce и BIM. Bitrix24 — воронки, каналы заявок, премии, согласования и BI. Без выдуманных процентов роста.",
   alternates: { canonical: "/cases" },
   openGraph: {
     title: `Кейсы внедрения Bitrix24 | ${siteConfig.brandName}`,
@@ -26,7 +26,7 @@ export default function CasesPage() {
       <Section>
         <PageHeading
           title="Кейсы внедрения Bitrix24"
-          subtitle="Реальные проекты CRM Flow24: как мы настраивали Bitrix24 для продаж, производства, строительства, коммуникаций, аналитики и внутренних процессов."
+          subtitle="Пять кейсов CRM Flow24: как настраивали Bitrix24 под разные отрасли — от миграции с amoCRM и Excel до доработки уже внедрённой CRM. Задача, что сделали, результат. Без выдуманных процентов роста."
         />
         <CasesGrid />
         <Typography color="text.secondary" sx={{ mt: 2.5, maxWidth: 900, lineHeight: 1.65 }}>
