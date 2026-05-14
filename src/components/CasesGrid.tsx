@@ -22,12 +22,7 @@ export function CasesGrid({ limit }: { limit?: number }) {
                 <Typography variant="h6" sx={{ fontWeight: 700, flex: "1 1 200px" }}>
                   {item.title}
                 </Typography>
-                <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                  {item.underNda ? (
-                    <Chip size="small" label="Проект под NDA" variant="outlined" color="secondary" />
-                  ) : null}
-                  <Chip size="small" label={item.niche} sx={{ alignSelf: "flex-start" }} />
-                </Box>
+                <Chip size="small" label={item.niche} sx={{ alignSelf: "flex-start" }} />
               </Box>
               <CaseStudyBody item={item} dense />
             </Stack>
