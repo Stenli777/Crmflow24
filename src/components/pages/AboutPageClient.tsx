@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import { Section } from "@/components/Section";
 import { CtaBanner } from "@/components/CtaBanner";
 import { legalConfig } from "@/config/legal";
+import { siteConfig } from "@/config/site";
 import { PageHero } from "@/components/PageHero";
 import { SectionHeader } from "@/components/SectionHeader";
 import { StagesGrid } from "@/components/StagesGrid";
@@ -27,8 +28,8 @@ export function AboutPageClient() {
       <Header />
       <Section>
         <PageHero
-          title="О компании CRM Flow 24"
-          subtitle="CRM Flow 24 — небольшая команда технических интеграторов: внедряем, настраиваем и сопровождаем Bitrix24 под реальные процессы продаж, сервиса и управления."
+          title={`О компании ${siteConfig.brandName}`}
+          subtitle={`${siteConfig.brandName} — небольшая команда технических интеграторов: внедряем, настраиваем и сопровождаем Bitrix24 под реальные процессы продаж, сервиса и управления.`}
         />
 
         <Stack spacing={1.25} sx={{ maxWidth: siteLayout.articleMaxPx }}>

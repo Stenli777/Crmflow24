@@ -22,11 +22,10 @@ import { siteLayout } from "@/theme/siteUi";
 
 export const metadata: Metadata = {
   title: "Политика использования cookie",
-  description:
-    "Порядок использования cookie, localStorage и аналитики (Яндекс.Метрика) на сайте CRM Flow 24 после согласия в баннере.",
+  description: `Порядок использования cookie, localStorage и аналитики (Яндекс.Метрика) на сайте ${siteConfig.brandName} после согласия в баннере.`,
   alternates: { canonical: "/cookies" },
   openGraph: {
-    title: "Политика cookie | CRM Flow 24",
+    title: `Политика cookie | ${siteConfig.brandName}`,
     description: "Категории cookie, Яндекс.Метрика, управление согласием и отзыв.",
     url: `${siteConfig.siteUrl}/cookies`,
   },

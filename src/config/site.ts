@@ -1,6 +1,6 @@
 export const siteConfig = {
   /** Публичное имя на сайте (совпадает с доменом crmflow24.ru) */
-  brandName: "CRM Flow 24",
+  brandName: "CRM Flow24",
   /** Подзаголовок для SEO и шапки, где нужен контекст Bitrix24 */
   brandTagline: "Внедрение и интеграция Bitrix24",
   /** Канонический адрес сайта (https) */

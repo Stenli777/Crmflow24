@@ -9,11 +9,10 @@ import { siteLayout } from "@/theme/siteUi";
 
 export const metadata: Metadata = {
   title: "Политика обработки персональных данных",
-  description:
-    "Политика ООО «Лиса Эдженси» в отношении обработки персональных данных посетителей сайта CRM Flow 24 и заявок.",
+  description: `Политика ООО «Лиса Эдженси» в отношении обработки персональных данных посетителей сайта ${siteConfig.brandName} и заявок.`,
   alternates: { canonical: "/privacy" },
   openGraph: {
-    title: "Политика обработки персональных данных | CRM Flow 24",
+    title: `Политика обработки персональных данных | ${siteConfig.brandName}`,
     description:
       "Порядок обработки персональных данных при использовании сайта и отправке заявок.",
     url: `${siteConfig.siteUrl}/privacy`,

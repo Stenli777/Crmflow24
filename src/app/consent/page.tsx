@@ -9,11 +9,10 @@ import { siteLayout } from "@/theme/siteUi";
 
 export const metadata: Metadata = {
   title: "Согласие на обработку персональных данных",
-  description:
-    "Текст согласия субъекта персональных данных на обработку ПДн при заполнении формы на сайте CRM Flow 24.",
+  description: `Текст согласия субъекта персональных данных на обработку ПДн при заполнении формы на сайте ${siteConfig.brandName}.`,
   alternates: { canonical: "/consent" },
   openGraph: {
-    title: "Согласие на обработку ПДн | CRM Flow 24",
+    title: `Согласие на обработку ПДн | ${siteConfig.brandName}`,
     url: `${siteConfig.siteUrl}/consent`,
   },
 };

@@ -4,8 +4,7 @@ import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "О компании",
-  description:
-    "CRM Flow 24 — команда технических интеграторов: внедрение и сопровождение Bitrix24 под бизнес-процессы. Бизнес-партнёр Битрикс24 с 2020 года.",
+  description: `${siteConfig.brandName} — команда технических интеграторов: внедрение и сопровождение Bitrix24 под бизнес-процессы. Бизнес-партнёр Битрикс24 с 2020 года.`,
   alternates: { canonical: "/about" },
   openGraph: {
     title: `О компании | ${siteConfig.brandName}`,

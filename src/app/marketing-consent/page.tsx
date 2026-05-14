@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "Отдельное согласие на рассылку: каналы, цели, срок, отзыв. Без отметки в форме на crmflow24.ru рекламные сообщения не направляются.",
   alternates: { canonical: "/marketing-consent" },
   openGraph: {
-    title: "Согласие на рекламные рассылки | CRM Flow 24",
+    title: `Согласие на рекламные рассылки | ${siteConfig.brandName}`,
     url: `${siteConfig.siteUrl}/marketing-consent`,
   },
 };

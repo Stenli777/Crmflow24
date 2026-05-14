@@ -69,7 +69,7 @@ export function Footer() {
                 color: footMuted,
               }}
             >
-              CRM Flow 24 — независимая компания по настройке и сопровождению Битрикс24. «Bitrix24» — товарный знак ООО
+              {siteConfig.brandName} — независимая компания по настройке и сопровождению Битрикс24. «Bitrix24» — товарный знак ООО
               «1С-Битрикс». Сайт не является официальным ресурсом Битрикс24.
             </Typography>
           </Box>
@@ -82,20 +82,6 @@ export function Footer() {
               flexShrink: 0,
             }}
           >
-            <Box sx={{ display: "flex", gap: { xs: 1.25, md: 1.5 }, flexWrap: "wrap", rowGap: 0.5 }}>
-              <MuiLink component={Link} href="/services" sx={navLinkSx}>
-                Услуги
-              </MuiLink>
-              <MuiLink component={Link} href="/cases" sx={navLinkSx}>
-                Кейсы
-              </MuiLink>
-              <MuiLink component={Link} href="/about" sx={navLinkSx}>
-                О компании
-              </MuiLink>
-              <MuiLink component={Link} href="/contacts" sx={navLinkSx}>
-                Контакты
-              </MuiLink>
-            </Box>
             <Box sx={{ display: "flex", gap: { xs: 1.25, md: 1.5 }, flexWrap: "wrap", alignItems: "center", rowGap: 0.5 }}>
               <MuiLink component={Link} href="/privacy" sx={navLinkSx}>
                 Политика ПДн
@@ -107,7 +93,7 @@ export function Footer() {
                 Согласие
               </MuiLink>
               <MuiLink component={Link} href="/terms" sx={navLinkSx}>
-                Terms
+                Соглашение
               </MuiLink>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contacts" },
   openGraph: {
     title: `Контакты | ${siteConfig.brandName}`,
-    description: "Свяжитесь с CRM Flow 24: заявка, телефон, email и реквизиты.",
+    description: `Свяжитесь с ${siteConfig.brandName}: заявка, телефон, email и реквизиты.`,
     url: `${siteConfig.siteUrl}/contacts`,
   },
 };

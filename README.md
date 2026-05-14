@@ -1,4 +1,4 @@
-# CRM Flow 24 (crmflow24.ru)
+# CRM Flow24 (crmflow24.ru)
 
 Лендинг и сайт компании на **Next.js 16** (App Router) + **React 19** + **MUI (Emotion)** + **TypeScript**.
 

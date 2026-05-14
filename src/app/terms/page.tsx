@@ -9,11 +9,10 @@ import { siteLayout } from "@/theme/siteUi";
 
 export const metadata: Metadata = {
   title: "Пользовательское соглашение",
-  description:
-    "Условия использования сайта CRM Flow 24: статус информации, ответственность, интеллектуальная собственность, споры и реквизиты.",
+  description: `Условия использования сайта ${siteConfig.brandName}: статус информации, ответственность, интеллектуальная собственность, споры и реквизиты.`,
   alternates: { canonical: "/terms" },
   openGraph: {
-    title: "Пользовательское соглашение | CRM Flow 24",
+    title: `Пользовательское соглашение | ${siteConfig.brandName}`,
     url: `${siteConfig.siteUrl}/terms`,
   },
 };
