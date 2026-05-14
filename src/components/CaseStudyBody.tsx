@@ -1,20 +1,6 @@
 import { Box, Chip, Stack, Typography } from "@mui/material";
 import type { CaseItem } from "@/content/site-content";
 
-function BulletList({ items }: { items: string[] }) {
-  return (
-    <Box component="ul" sx={{ pl: 2.5, m: 0, color: "text.secondary" }}>
-      {items.map((line) => (
-        <li key={line}>
-          <Typography color="text.secondary" sx={{ lineHeight: 1.6 }}>
-            {line}
-          </Typography>
-        </li>
-      ))}
-    </Box>
-  );
-}
-
 export function CaseStudyBody({
   item,
   dense,
@@ -24,38 +10,43 @@ export function CaseStudyBody({
   dense?: boolean;
   showSummary?: boolean;
 }) {
-  const spacing = dense ? 1.2 : 1.75;
+  const spacing = dense ? 1 : 1.35;
+  const bulletSize = dense ? "0.875rem" : "0.9375rem";
+
   return (
     <Stack spacing={spacing}>
       {showSummary ? (
-        <Typography color="text.secondary" sx={{ lineHeight: 1.65 }}>
+        <Typography color="text.secondary" variant="body2" sx={{ lineHeight: 1.62 }}>
           {item.summary}
         </Typography>
       ) : null}
-      <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
-        {item.tags.map((tag) => (
-          <Chip key={tag} size="small" label={tag} color="primary" variant="outlined" />
-        ))}
-      </Box>
-      <Box>
-        <Typography sx={{ fontWeight: 700, mb: 0.75 }}>Ключевые факты</Typography>
-        <Box sx={{ display: "flex", gap: 0.75, flexWrap: "wrap" }}>
-          {item.facts.map((fact) => (
-            <Chip key={fact} size="small" variant="filled" color="default" label={fact} sx={{ bgcolor: "action.hover" }} />
+      {item.tags.length > 0 ? (
+        <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
+          {item.tags.map((tag) => (
+            <Chip key={tag} size="small" label={tag} color="primary" variant="outlined" />
           ))}
         </Box>
-      </Box>
-      <Box>
-        <Typography sx={{ fontWeight: 700, mb: 0.5 }}>Задача</Typography>
-        <BulletList items={item.problem} />
-      </Box>
-      <Box>
-        <Typography sx={{ fontWeight: 700, mb: 0.5 }}>Что сделали</Typography>
-        <BulletList items={item.solution} />
-      </Box>
-      <Box>
-        <Typography sx={{ fontWeight: 700, mb: 0.5 }}>Результат</Typography>
-        <BulletList items={item.result} />
+      ) : null}
+      <Box
+        component="ul"
+        sx={{
+          m: 0,
+          pl: 2.125,
+          color: "text.secondary",
+          "& li": { mb: dense ? 0.65 : 0.85, pl: 0.125 },
+          "& li:last-of-type": { mb: 0 },
+        }}
+      >
+        {item.highlights.map((line) => (
+          <Typography
+            key={line}
+            component="li"
+            variant="body2"
+            sx={{ lineHeight: 1.55, fontSize: bulletSize }}
+          >
+            {line}
+          </Typography>
+        ))}
       </Box>
     </Stack>
   );
