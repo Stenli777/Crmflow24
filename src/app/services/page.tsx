@@ -7,6 +7,7 @@ import { PageHeading } from "@/components/PageHeading";
 import { ServicesGrid } from "@/components/ServicesGrid";
 import { CtaBanner } from "@/components/CtaBanner";
 import { siteConfig } from "@/config/site";
+import { siteLayout } from "@/theme/siteUi";
 
 export const metadata: Metadata = {
   title: "Услуги",
@@ -30,7 +31,7 @@ export default function ServicesPage() {
           subtitle="Каждая услуга описана через задачу клиента, этапы внедрения и ожидаемый эффект для продаж и сервиса."
         />
         <ServicesGrid />
-        <Typography color="text.secondary" sx={{ mt: 2.5 }}>
+        <Typography color="text.secondary" sx={{ mt: 2.5, maxWidth: siteLayout.heroLeadMaxPx, lineHeight: 1.65 }}>
           Мы можем собрать коммерческое предложение по этапам: быстрый запуск MVP, а
           затем масштабирование под рост команды и каналов продаж.
         </Typography>

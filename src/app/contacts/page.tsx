@@ -1,18 +1,12 @@
 import type { Metadata } from "next";
-import {
-  Box,
-  Card,
-  CardContent,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, CardContent, IconButton, Stack, Typography } from "@mui/material";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Section } from "@/components/Section";
 import { PageHeading } from "@/components/PageHeading";
+import { CardShell } from "@/components/CardShell";
 import { ContactForm } from "@/components/ContactForm";
 import { CompanyRequisitesFull } from "@/components/CompanyRequisitesFull";
 import { siteConfig } from "@/config/site";
@@ -46,7 +40,6 @@ export default function ContactsPage() {
 
         <Box
           sx={{
-            mt: 2.5,
             display: "grid",
             gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
             gap: { xs: 3, md: 4 },
@@ -54,7 +47,7 @@ export default function ContactsPage() {
           }}
         >
           <Stack spacing={2}>
-            <Card variant="outlined" sx={{ borderRadius: 3 }}>
+            <CardShell>
               <CardContent>
                 <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1.5 }}>
                   Связь
@@ -97,18 +90,18 @@ export default function ContactsPage() {
                   <Typography>Формат работы: {legalConfig.workFormat}</Typography>
                 </Stack>
               </CardContent>
-            </Card>
+            </CardShell>
 
-            <Card variant="outlined" sx={{ borderRadius: 3 }}>
+            <CardShell>
               <CardContent>
                 <CompanyRequisitesFull />
               </CardContent>
-            </Card>
+            </CardShell>
           </Stack>
 
-          <Card id="contact-form" variant="outlined" sx={{ borderRadius: 3, p: { xs: 2, md: 3 } }}>
+          <CardShell id="contact-form" sx={{ p: { xs: 2, md: 3 } }}>
             <ContactForm />
-          </Card>
+          </CardShell>
         </Box>
       </Section>
       <Footer />

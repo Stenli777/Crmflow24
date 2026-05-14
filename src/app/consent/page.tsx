@@ -5,6 +5,7 @@ import { LegalPageShell } from "@/components/legal/LegalPageShell";
 import { LegalDocFooterLinks } from "@/components/legal/LegalDocFooterLinks";
 import { siteConfig } from "@/config/site";
 import { legalConfig } from "@/config/legal";
+import { siteLayout } from "@/theme/siteUi";
 
 export const metadata: Metadata = {
   title: "Согласие на обработку персональных данных",
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 export default function ConsentPage() {
   return (
     <LegalPageShell title="Согласие на обработку персональных данных">
-      <Stack spacing={2} sx={{ mt: 2, maxWidth: 900 }}>
+      <Stack spacing={2} sx={{ maxWidth: siteLayout.articleMaxPx }}>
         <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
           Настоящим я, заполняя форму на сайте{" "}
           <strong>{siteConfig.siteDomain}</strong>, даю согласие{" "}

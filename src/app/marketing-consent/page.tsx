@@ -5,6 +5,7 @@ import { LegalPageShell } from "@/components/legal/LegalPageShell";
 import { LegalDocFooterLinks } from "@/components/legal/LegalDocFooterLinks";
 import { siteConfig } from "@/config/site";
 import { legalConfig } from "@/config/legal";
+import { siteLayout, siteSurfaces } from "@/theme/siteUi";
 
 export const metadata: Metadata = {
   title: "Согласие на получение рекламных и информационных сообщений",
@@ -23,7 +24,7 @@ export default function MarketingConsentPage() {
       title="Согласие на получение рекламных и информационных сообщений"
       subtitle="Документ применяется, если вы отдельно отметили согласие на рассылку в форме. Без этой отметки маркетинговые сообщения не направляются."
     >
-      <Stack spacing={2} sx={{ mt: 2, maxWidth: 900 }}>
+      <Stack spacing={2} sx={{ maxWidth: siteLayout.articleMaxPx }}>
         <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
           Настоящим я даю согласие <strong>{legalConfig.operatorName}</strong> на направление мне на
           указанные в форме контакты (номер телефона, email, мессенджеры при наличии) информационных и
@@ -52,7 +53,7 @@ export default function MarketingConsentPage() {
           component="aside"
           sx={{
             p: 2,
-            borderRadius: 2,
+            borderRadius: `${siteSurfaces.cardRadiusPx}px`,
             bgcolor: "rgba(46,125,255,0.06)",
             border: "1px solid rgba(46,125,255,0.2)",
           }}

@@ -6,6 +6,7 @@ import { LegalDocFooterLinks } from "@/components/legal/LegalDocFooterLinks";
 import { siteConfig } from "@/config/site";
 import { legalConfig } from "@/config/legal";
 import { ANALYTICS_COOKIE_NAME } from "@/lib/cookieConsentStorage";
+import { siteLayout } from "@/theme/siteUi";
 
 export const metadata: Metadata = {
   title: "Политика использования cookie",
@@ -27,7 +28,7 @@ export default function CookiesPage() {
       title="Политика в отношении использования файлов cookie"
       subtitle="Описание категорий cookie и аналитики. Яндекс.Метрика подключается только после выбора в баннере (в т.ч. через «Настроить»). Google Analytics и Cloudflare не используются. Выбор сохраняется в браузере (localStorage и, при включении аналитики, технический first-party cookie для согласованной подгрузки счётчика)."
     >
-      <Stack spacing={2} sx={{ mt: 2, maxWidth: 900 }}>
+      <Stack spacing={2} sx={{ maxWidth: siteLayout.articleMaxPx }}>
         <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
           Настоящая Политика применяется к сайту{" "}
           <MuiLink href={site}>{siteConfig.siteDomain}</MuiLink> и действует в отношении Оператора:{" "}

@@ -5,6 +5,7 @@ import { LegalPageShell } from "@/components/legal/LegalPageShell";
 import { LegalDocFooterLinks } from "@/components/legal/LegalDocFooterLinks";
 import { siteConfig } from "@/config/site";
 import { legalConfig } from "@/config/legal";
+import { siteLayout } from "@/theme/siteUi";
 
 export const metadata: Metadata = {
   title: "Пользовательское соглашение",
@@ -23,7 +24,7 @@ export default function TermsPage() {
       title="Пользовательское соглашение"
       subtitle="Условия использования информационного ресурса, размещённого по адресу в сети Интернет."
     >
-      <Stack spacing={2} sx={{ mt: 2, maxWidth: 900 }}>
+      <Stack spacing={2} sx={{ maxWidth: siteLayout.articleMaxPx }}>
         <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
           Настоящее Пользовательское соглашение (далее — «Соглашение») регулирует отношения между{" "}
           <strong>{legalConfig.operatorName}</strong> (далее — «Администрация») и любым лицом, использующим

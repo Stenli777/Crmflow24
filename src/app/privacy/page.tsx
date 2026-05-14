@@ -5,6 +5,7 @@ import { LegalPageShell } from "@/components/legal/LegalPageShell";
 import { LegalDocFooterLinks } from "@/components/legal/LegalDocFooterLinks";
 import { siteConfig } from "@/config/site";
 import { legalConfig } from "@/config/legal";
+import { siteLayout } from "@/theme/siteUi";
 
 export const metadata: Metadata = {
   title: "Политика обработки персональных данных",
@@ -43,7 +44,7 @@ export default function PrivacyPage() {
       title="Политика в отношении обработки персональных данных"
       subtitle="Документ определяет порядок обработки персональных данных при использовании сайта и отправке заявок. Рассылка рекламных сообщений без отдельного согласия не выполняется."
     >
-      <Stack spacing={2} sx={{ mt: 2, maxWidth: 900 }}>
+      <Stack spacing={2} sx={{ maxWidth: siteLayout.articleMaxPx }}>
         <P>
           Настоящая Политика разработана в соответствии с Федеральным законом от 27.07.2006 № 152-ФЗ «О
           персональных данных» и применяется к данным, которые оператор получает при работе сайта{" "}

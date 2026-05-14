@@ -131,10 +131,11 @@ export function Header() {
                 sx={{
                   textTransform: "none",
                   fontWeight: 700,
-                  px: { xs: 1.5, sm: scrolled ? 1.75 : 2 },
-                  py: scrolled ? 0.65 : 0.85,
-                  fontSize: scrolled ? "0.875rem" : "0.9375rem",
-                  transition: "padding 220ms ease, font-size 220ms ease",
+                  px: { xs: 1.5, sm: 2 },
+                  py: 0.75,
+                  fontSize: "0.9375rem",
+                  minHeight: 40,
+                  transition: "box-shadow 220ms ease, background-color 220ms ease",
                 }}
               >
                 {siteConfig.primaryCta}

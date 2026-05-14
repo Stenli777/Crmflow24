@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { siteConfig } from "@/config/site";
+import { siteSurfaces } from "@/theme/siteUi";
 
 const defaultContactHref = "/contacts#contact-form";
 
@@ -19,8 +20,8 @@ export function CtaBanner({
     <Box
       sx={{
         mt: 3,
-        borderRadius: "16px",
-        border: "1px solid rgba(15, 23, 42, 0.08)",
+        borderRadius: `${siteSurfaces.cardRadiusPx}px`,
+        border: siteSurfaces.cardBorder,
         p: { xs: 2.5, md: 4 },
         bgcolor: "#ffffff",
         backgroundImage:

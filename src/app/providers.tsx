@@ -31,7 +31,7 @@ const theme = createTheme({
       letterSpacing: "0.01em",
     },
     body2: {
-      fontSize: "0.9375rem",
+      fontSize: "1rem",
       lineHeight: 1.6,
       letterSpacing: "0.01em",
     },
@@ -59,14 +59,19 @@ const theme = createTheme({
       lineHeight: 1.5,
       letterSpacing: "0.02em",
     },
+    /** Внутренние страницы: H1; на главной hero переопределяет размеры через `sx` */
     h1: {
       fontWeight: 700,
-      fontSize: "2.375rem",
-      lineHeight: 1.2,
-      letterSpacing: "-0.02em",
+      fontSize: "1.75rem",
+      lineHeight: 1.25,
+      letterSpacing: "-0.015em",
+      "@media (min-width:600px)": {
+        fontSize: "2rem",
+        lineHeight: 1.22,
+      },
       "@media (min-width:900px)": {
-        fontSize: "3rem",
-        lineHeight: 1.18,
+        fontSize: "2.375rem",
+        lineHeight: 1.22,
       },
     },
     h2: {

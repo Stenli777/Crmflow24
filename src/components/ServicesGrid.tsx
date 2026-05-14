@@ -1,4 +1,5 @@
-import { Box, Card, CardContent, Stack, Typography } from "@mui/material";
+import { Box, CardContent, Stack, Typography } from "@mui/material";
+import { CardShell } from "@/components/CardShell";
 import { services } from "@/content/site-content";
 
 export function ServicesGrid({ limit }: { limit?: number }) {
@@ -7,7 +8,6 @@ export function ServicesGrid({ limit }: { limit?: number }) {
   return (
     <Box
       sx={{
-        mt: 2.5,
         display: "grid",
         gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr" },
         gap: 2.5,
@@ -16,20 +16,7 @@ export function ServicesGrid({ limit }: { limit?: number }) {
       {list.map((item) => {
         const Icon = item.icon;
         return (
-          <Card
-            key={item.title}
-            variant="outlined"
-            sx={{
-              height: "100%",
-              borderRadius: "16px",
-              transition: "transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease",
-              "&:hover": {
-                transform: "translateY(-2px)",
-                boxShadow: "0 10px 26px rgba(15, 23, 42, 0.08)",
-                borderColor: "rgba(46,125,255,0.28)",
-              },
-            }}
-          >
+          <CardShell key={item.title} hoverLift sx={{ height: "100%" }}>
             <CardContent>
               <Stack spacing={1.25}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -55,7 +42,7 @@ export function ServicesGrid({ limit }: { limit?: number }) {
                 <Typography color="text.secondary">{item.details}</Typography>
               </Stack>
             </CardContent>
-          </Card>
+          </CardShell>
         );
       })}
     </Box>

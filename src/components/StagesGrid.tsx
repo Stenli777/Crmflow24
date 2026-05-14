@@ -1,9 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { stages } from "@/content/site-content";
-
-const r = "16px";
-const border = "1px solid rgba(15, 23, 42, 0.08)";
-const shadowCard = "0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06)";
+import { CardShell } from "@/components/CardShell";
+import { siteSurfaces } from "@/theme/siteUi";
 
 export function StagesGrid({ limit }: { limit?: number }) {
   const list = typeof limit === "number" ? stages.slice(0, limit) : stages;
@@ -17,23 +15,15 @@ export function StagesGrid({ limit }: { limit?: number }) {
       }}
     >
       {list.map((item, index) => (
-        <Box
+        <CardShell
           key={item.step}
+          hoverLift
           sx={{
             position: "relative",
             height: "100%",
-            borderRadius: r,
-            border,
-            bgcolor: "#ffffff",
-            boxShadow: shadowCard,
             p: { xs: 1.75, md: 2.25 },
             pt: { xs: 2.25, md: 2.5 },
-            transition: "transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease",
-            "&:hover": {
-              transform: "translateY(-2px)",
-              boxShadow: "0 12px 32px rgba(15, 23, 42, 0.09)",
-              borderColor: "rgba(46, 125, 255, 0.22)",
-            },
+            boxShadow: siteSurfaces.cardShadowSoft,
           }}
         >
           <Box
@@ -74,7 +64,7 @@ export function StagesGrid({ limit }: { limit?: number }) {
             sx={{
               mt: 1.5,
               pt: 1.5,
-              borderTop: "1px solid rgba(15, 23, 42, 0.06)",
+              borderTop: siteSurfaces.dividerSubtle,
             }}
           >
             <Typography variant="caption" sx={{ fontWeight: 700, color: "primary.main", letterSpacing: "0.04em" }}>
@@ -84,7 +74,7 @@ export function StagesGrid({ limit }: { limit?: number }) {
               {item.outcome}
             </Typography>
           </Box>
-        </Box>
+        </CardShell>
       ))}
     </Box>
   );

@@ -1,22 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Box,
-  Card,
-  CardContent,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, CardContent, Stack, Typography } from "@mui/material";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Section } from "@/components/Section";
 import { CtaBanner } from "@/components/CtaBanner";
 import { CompanyRequisitesFull } from "@/components/CompanyRequisitesFull";
 import { legalConfig } from "@/config/legal";
+import { PageHero } from "@/components/PageHero";
+import { SectionHeader } from "@/components/SectionHeader";
+import { CardShell } from "@/components/CardShell";
+import { siteLayout } from "@/theme/siteUi";
 
 const border = "1px solid rgba(15, 23, 42, 0.08)";
-const r = "16px";
 
 const workSteps = [
   "Разбираем текущий процесс",
@@ -40,19 +37,12 @@ export function AboutPageClient() {
     <Box sx={{ minHeight: "100vh" }}>
       <Header />
       <Section>
-        <Typography
-          component="h1"
-          variant="h2"
-          sx={{ fontWeight: 800, fontSize: { xs: "1.75rem", md: "2.25rem" }, letterSpacing: "-0.02em" }}
-        >
-          О компании CRM Flow 24
-        </Typography>
-        <Typography color="text.secondary" sx={{ mt: 1.5, maxWidth: 900, lineHeight: 1.7 }}>
-          CRM Flow 24 — небольшая команда технических интеграторов: внедряем, настраиваем и сопровождаем Bitrix24 под
-          реальные процессы продаж, сервиса и управления.
-        </Typography>
+        <PageHero
+          title="О компании CRM Flow 24"
+          subtitle="CRM Flow 24 — небольшая команда технических интеграторов: внедряем, настраиваем и сопровождаем Bitrix24 под реальные процессы продаж, сервиса и управления."
+        />
 
-        <Stack spacing={1.25} sx={{ mt: 2.5, maxWidth: 900 }}>
+        <Stack spacing={1.25} sx={{ maxWidth: siteLayout.articleMaxPx }}>
           <Typography color="text.secondary" sx={{ lineHeight: 1.7 }}>
             Бизнес-партнёр Битрикс24 с {legalConfig.businessPartnerSinceYear} года.
           </Typography>
@@ -66,15 +56,13 @@ export function AboutPageClient() {
           </Typography>
         </Stack>
 
-        <Typography sx={{ mt: 3, fontWeight: 700, maxWidth: 900, lineHeight: 1.65 }}>
+        <Typography sx={{ mt: 3, fontWeight: 700, maxWidth: siteLayout.articleMaxPx, lineHeight: 1.65 }}>
           Мы строим внедрение от бизнес-цели: сначала метрики и архитектура процесса, затем автоматизация и интеграции,
           затем закрепление в регулярной работе.
         </Typography>
 
-        <Box sx={{ mt: 3.5, maxWidth: 900 }}>
-          <Typography variant="h5" sx={{ fontWeight: 800, mb: 1.5, letterSpacing: "-0.01em" }}>
-            С кем работаем
-          </Typography>
+        <Box sx={{ mt: 3.5, maxWidth: siteLayout.articleMaxPx }}>
+          <SectionHeader dense level="subsection" title="С кем работаем" titleComponent="h2" />
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
             {legalConfig.clientIndustries.map((label) => (
               <Box
@@ -97,10 +85,8 @@ export function AboutPageClient() {
           </Box>
         </Box>
 
-        <Box sx={{ mt: 3.5, maxWidth: 900 }}>
-          <Typography variant="h5" sx={{ fontWeight: 800, mb: 1.5, letterSpacing: "-0.01em" }}>
-            Почему компании работают с нами годами
-          </Typography>
+        <Box sx={{ mt: 3.5, maxWidth: siteLayout.articleMaxPx }}>
+          <SectionHeader dense level="subsection" title="Почему компании работают с нами годами" titleComponent="h2" />
           <Stack component="ul" spacing={0.85} sx={{ m: 0, pl: 2.25, color: "text.secondary", lineHeight: 1.65 }}>
             {whyLongTerm.map((line) => (
               <Typography key={line} component="li" sx={{ pl: 0.25 }}>
@@ -111,13 +97,11 @@ export function AboutPageClient() {
         </Box>
 
         <Box sx={{ mt: 3 }}>
-          <Typography variant="h5" sx={{ fontWeight: 800, mb: 1.5, letterSpacing: "-0.01em" }}>
-            Как работаем
-          </Typography>
+          <SectionHeader dense level="subsection" title="Как работаем" titleComponent="h2" />
           <Stack
             component="ol"
             spacing={1}
-            sx={{ m: 0, pl: 2.5, maxWidth: 900, color: "text.secondary", lineHeight: 1.65 }}
+            sx={{ m: 0, pl: 2.5, maxWidth: siteLayout.articleMaxPx, color: "text.secondary", lineHeight: 1.65 }}
           >
             {workSteps.map((step) => (
               <Typography key={step} component="li">
@@ -127,11 +111,11 @@ export function AboutPageClient() {
           </Stack>
         </Box>
 
-        <Box sx={{ mt: 3, maxWidth: 900 }}>
+        <Box sx={{ mt: 3, maxWidth: siteLayout.articleMaxPx }}>
           <CompanyRequisitesFull />
         </Box>
 
-        <Card variant="outlined" sx={{ borderRadius: r, mt: 3, maxWidth: 900 }}>
+        <CardShell sx={{ mt: 3, maxWidth: siteLayout.articleMaxPx }}>
           <CardContent>
             <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 1 }}>
               Документы и связь
@@ -148,7 +132,7 @@ export function AboutPageClient() {
               .
             </Typography>
           </CardContent>
-        </Card>
+        </CardShell>
 
         <CtaBanner
           title="Обсудим ваш процесс и следующий шаг"
