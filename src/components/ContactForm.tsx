@@ -265,7 +265,7 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
             />
           }
           label={
-            <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.55 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.55 }}>
               Я ознакомлен(а) с{" "}
               <MuiLink component={Link} href="/privacy" sx={{ fontWeight: 600 }}>
                 Политикой обработки персональных данных
@@ -294,7 +294,7 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
             />
           }
           label={
-            <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.55 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.55 }}>
               Согласен(на) на получение информационных и рекламных сообщений — на условиях{" "}
               <MuiLink component={Link} href="/marketing-consent" sx={{ fontWeight: 600 }}>
                 отдельного согласия на рассылку
@@ -304,11 +304,6 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
           }
           sx={{ alignItems: "flex-start", ml: 0 }}
         />
-
-        <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.6 }}>
-          Нажимая «Отправить заявку», вы подтверждаете достоверность указанных данных. Данные используются
-          для обработки обращения и не передаются третьим лицам, кроме случаев, указанных в Политике.
-        </Typography>
 
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ alignItems: "center" }}>
           <Button
@@ -322,12 +317,13 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
           </Button>
         </Stack>
 
-        <Typography variant="caption" color="text.secondary">
-          Политика cookie:{" "}
-          <MuiLink component={Link} href="/cookies">
-            /cookies
+        <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.6 }}>
+          Нажимая «Отправить заявку», вы подтверждаете достоверность указанных данных. Данные используются для
+          обработки обращения и не передаются третьим лицам, кроме случаев, указанных в{" "}
+          <MuiLink component={Link} href="/privacy" sx={{ fontWeight: 600 }}>
+            Политике
           </MuiLink>
-          . Заявка уходит на сервер сайта и создаётся в CRM Bitrix24.
+          .
         </Typography>
       </Stack>
     </Box>

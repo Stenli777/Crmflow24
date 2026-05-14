@@ -7,16 +7,19 @@ import {
   Container,
   Drawer,
   IconButton,
+  Link as MuiLink,
   Toolbar,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
+import TelegramIcon from "@mui/icons-material/Telegram";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { siteConfig } from "@/config/site";
+import { legalConfig } from "@/config/legal";
 
 const items: Array<{ label: string; href: string }> = [
   { label: "Услуги", href: "/services" },
@@ -28,17 +31,26 @@ const items: Array<{ label: string; href: string }> = [
 const headerTransition = "background-color 220ms ease, backdrop-filter 220ms ease, border-color 220ms ease";
 const layoutTransition = "min-height 220ms ease, padding-top 220ms ease, padding-bottom 220ms ease";
 
+/** Высота под фиксированную шапку (макс. toolbar + вертикальные отступы), без подгона под анимацию shrink */
+const headerSpacerSx = {
+  height: { xs: 72, md: 88 },
+  flexShrink: 0,
+} as const;
+
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const scrolled = useScrollTrigger({ disableHysteresis: true, threshold: 8 });
 
   return (
+    <Fragment>
     <AppBar
-      position="sticky"
+      position="fixed"
       elevation={0}
       sx={{
         top: 0,
+        left: 0,
+        right: 0,
         zIndex: (theme) => theme.zIndex.appBar,
         bgcolor: scrolled ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.72)",
         color: "text.primary",
@@ -99,6 +111,9 @@ export function Header() {
                 display: { xs: "none", md: "flex" },
                 alignItems: "center",
                 gap: 0.25,
+                flex: "1 1 auto",
+                justifyContent: "center",
+                minWidth: 0,
               }}
             >
               {items.map((it) => (
@@ -122,7 +137,39 @@ export function Header() {
               ))}
             </Box>
 
-            <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.75, sm: 1 } }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, sm: 1 }, flexShrink: 0 }}>
+              <MuiLink
+                href={`tel:${legalConfig.phoneTel}`}
+                underline="hover"
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  fontWeight: 700,
+                  fontSize: { xs: "0.78rem", sm: "0.875rem", md: scrolled ? "0.9rem" : "0.9375rem" },
+                  color: "text.primary",
+                  whiteSpace: "nowrap",
+                  minWidth: 0,
+                  mr: { xs: 0, sm: 0.25 },
+                }}
+              >
+                {legalConfig.phoneDisplay}
+              </MuiLink>
+              <IconButton
+                component="a"
+                href={legalConfig.telegramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Написать в Telegram"
+                color="primary"
+                size={scrolled ? "small" : "medium"}
+                sx={{
+                  border: "1px solid",
+                  borderColor: "divider",
+                  flexShrink: 0,
+                }}
+              >
+                <TelegramIcon fontSize="small" />
+              </IconButton>
               <Button
                 variant="contained"
                 component={Link}
@@ -131,14 +178,32 @@ export function Header() {
                 sx={{
                   textTransform: "none",
                   fontWeight: 700,
-                  px: { xs: 1.5, sm: 2 },
+                  px: { xs: 1.15, sm: 2 },
                   py: 0.75,
-                  fontSize: "0.9375rem",
+                  fontSize: { xs: "0.8125rem", sm: "0.9375rem" },
                   minHeight: 40,
                   transition: "box-shadow 220ms ease, background-color 220ms ease",
+                  display: { xs: "none", sm: "inline-flex" },
                 }}
               >
                 {siteConfig.primaryCta}
+              </Button>
+              <Button
+                variant="contained"
+                component={Link}
+                href="/contacts#contact-form"
+                size="small"
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 700,
+                  px: 1.1,
+                  py: 0.5,
+                  fontSize: "0.75rem",
+                  minHeight: 36,
+                  display: { xs: "inline-flex", sm: "none" },
+                }}
+              >
+                Заявка
               </Button>
               <IconButton
                 onClick={() => setOpen(true)}
@@ -176,9 +241,29 @@ export function Header() {
                 {it.label}
               </Button>
             ))}
+            <Button
+              component={MuiLink}
+              href={`tel:${legalConfig.phoneTel}`}
+              onClick={() => setOpen(false)}
+              sx={{ justifyContent: "flex-start", textTransform: "none", fontWeight: 600 }}
+            >
+              {legalConfig.phoneDisplay}
+            </Button>
+            <Button
+              component={MuiLink}
+              href={legalConfig.telegramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              sx={{ justifyContent: "flex-start", textTransform: "none", fontWeight: 600 }}
+            >
+              Telegram
+            </Button>
           </Box>
         </Box>
       </Drawer>
     </AppBar>
+    <Box aria-hidden sx={headerSpacerSx} />
+    </Fragment>
   );
 }

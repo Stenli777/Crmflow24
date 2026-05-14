@@ -65,12 +65,6 @@ export default function ContactsPage() {
                       {siteConfig.contactEmail}
                     </Link>
                   </Typography>
-                  <Typography>
-                    Email по персональным данным:{" "}
-                    <Link href={`mailto:${legalConfig.privacyEmail}`} style={{ fontWeight: 600 }}>
-                      {legalConfig.privacyEmail}
-                    </Link>
-                  </Typography>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Typography component="span">Telegram:</Typography>
                     <IconButton
@@ -87,7 +81,6 @@ export default function ContactsPage() {
                     </IconButton>
                   </Box>
                   <Typography>Режим работы: {legalConfig.workHours}</Typography>
-                  <Typography>Формат работы: {legalConfig.workFormat}</Typography>
                 </Stack>
               </CardContent>
             </CardShell>

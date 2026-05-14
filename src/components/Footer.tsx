@@ -36,7 +36,7 @@ export function Footer() {
               component="div"
               sx={{ display: "block", lineHeight: 1.35, color: footMuted, fontSize: "0.75rem" }}
             >
-              © {new Date().getFullYear()} {siteConfig.brandName} · {siteConfig.siteDomain} ·{" "}
+              © {new Date().getFullYear()} {siteConfig.brandName} ·{" "}
               <MuiLink href={`mailto:${siteConfig.contactEmail}`} sx={{ ...navLinkSx, color: footMuted }}>
                 {siteConfig.contactEmail}
               </MuiLink>

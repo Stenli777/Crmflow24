@@ -40,10 +40,20 @@ export const legalConfig = {
   ] as const,
   industriesLine:
     "строительство, недвижимость, майнинг-оборудование, арендный бизнес, продажа автозапчастей, протезирование",
-  /** Версия текстов согласий для CRM и политики */
-  consentVersion: "1.1",
-  policyVersion: "1.1",
-  policyEffectiveDate: "2026-05-13",
+  /** Версия текста согласия на обработку ПДн (/consent, DOCX Согласие_на_обработку_персональных_данных) */
+  consentVersion: "1.2",
+  consentEffectiveDate: "2026-05-14",
+  policyVersion: "1.2",
+  policyEffectiveDate: "2026-05-14",
+  /** Версия политики cookie (страница /cookies, документ Политика_cookie) */
+  cookiePolicyVersion: "1.2",
+  cookiePolicyEffectiveDate: "2026-05-14",
+  /** Версия пользовательского соглашения (/terms, DOCX Пользовательское_соглашение) */
+  termsVersion: "1.2",
+  termsEffectiveDate: "2026-05-14",
+  /** Согласие на рекламные и информационные сообщения (/marketing-consent) */
+  marketingConsentVersion: "1.2",
+  marketingConsentEffectiveDate: "2026-05-14",
   /** Хостинг и сервисы (для политики ПДн / cookie) */
   hostingProvider: "REG.RU",
 } as const;
