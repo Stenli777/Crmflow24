@@ -10,6 +10,7 @@ import { BlogFaq } from "@/components/blog/BlogFaq";
 import { BlogRelatedServices } from "@/components/blog/BlogRelatedServices";
 import { BlogRelatedPosts } from "@/components/blog/BlogRelatedPosts";
 import { BlogJsonLd } from "@/components/blog/BlogJsonLd";
+import { BlogFaqJsonLd } from "@/components/blog/BlogFaqJsonLd";
 import {
   getPublishedPostBySlug,
   getRelatedPostsForPost,
@@ -58,6 +59,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
   return (
     <BlogPageShell>
       <BlogJsonLd post={post} />
+      <BlogFaqJsonLd items={post.faqItems} />
       <BlogBreadcrumbs items={breadcrumbItems} />
       <BlogArticleHeader post={post} />
       <BlogArticleCta

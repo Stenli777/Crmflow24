@@ -3,6 +3,7 @@ import {
   breadcrumbPageTitles,
   buildBreadcrumbJsonLd,
   buildOrganizationJsonLd,
+  buildWebSiteJsonLd,
   jsonLdScriptContent,
 } from "@/lib/jsonLd";
 
@@ -13,6 +14,7 @@ export async function SiteJsonLd() {
 
   const blocks: { key: string; data: unknown }[] = [
     { key: "ld-organization", data: buildOrganizationJsonLd() },
+    { key: "ld-website", data: buildWebSiteJsonLd() },
   ];
 
   if (pathname && pathname !== "/") {

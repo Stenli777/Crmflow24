@@ -24,9 +24,17 @@ import { legalConfig } from "@/config/legal";
 const items: Array<{ label: string; href: string }> = [
   { label: "Услуги", href: "/services" },
   { label: "Кейсы", href: "/cases" },
+  { label: "Блог", href: "/blog" },
   { label: "О компании", href: "/about" },
   { label: "Контакты", href: "/contacts" },
 ];
+
+function isNavActive(pathname: string, href: string): boolean {
+  if (href === "/blog") {
+    return pathname === "/blog" || pathname.startsWith("/blog/");
+  }
+  return pathname === href;
+}
 
 const headerTransition = "background-color 220ms ease, backdrop-filter 220ms ease, border-color 220ms ease";
 const layoutTransition = "min-height 220ms ease, padding-top 220ms ease, padding-bottom 220ms ease";
@@ -124,7 +132,7 @@ export function Header() {
                   href={it.href}
                   sx={{
                     textTransform: "none",
-                    fontWeight: pathname === it.href ? 700 : 500,
+                    fontWeight: isNavActive(pathname, it.href) ? 700 : 500,
                     px: scrolled ? 1 : 1.15,
                     py: scrolled ? 0.5 : 0.65,
                     minHeight: scrolled ? 36 : 40,
@@ -235,7 +243,7 @@ export function Header() {
                 sx={{
                   justifyContent: "flex-start",
                   textTransform: "none",
-                  fontWeight: pathname === it.href ? 700 : 500,
+                  fontWeight: isNavActive(pathname, it.href) ? 700 : 500,
                 }}
               >
                 {it.label}

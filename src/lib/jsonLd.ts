@@ -23,6 +23,15 @@ export function buildOrganizationJsonLd() {
   };
 }
 
+export function buildWebSiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteConfig.brandName,
+    url: siteConfig.siteUrl,
+  };
+}
+
 export function buildFaqPageJsonLd(
   items: readonly { q: string; a: string; cta?: { label: string; href: string } }[],
 ): Record<string, unknown> {
@@ -53,6 +62,7 @@ export const breadcrumbPageTitles: Record<string, string> = {
   "/privacy": "Политика обработки персональных данных",
   "/services": "Услуги",
   "/terms": "Пользовательское соглашение",
+  "/blog": "Блог",
 };
 
 export function buildBreadcrumbJsonLd(pathname: string, pageTitle: string) {
