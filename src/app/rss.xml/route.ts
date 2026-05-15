@@ -1,10 +1,18 @@
 import { getPostsForRss } from "@/lib/blog/seoQueries";
 import { buildRssFeed } from "@/lib/rss/buildFeed";
 import { absoluteUrl } from "@/lib/seo/siteUrl";
+import {
+  isSeoFeedAllowed,
+  seoFeedBlockedResponse,
+} from "@/lib/seo/seoFeeds";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  if (!isSeoFeedAllowed()) {
+    return seoFeedBlockedResponse();
+  }
+
   const posts = await getPostsForRss();
   const xml = buildRssFeed(
     {

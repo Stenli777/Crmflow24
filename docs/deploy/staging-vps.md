@@ -31,7 +31,7 @@ git pull
 
 ```bash
 cp .env.staging.example .env
-nano .env   # DATABASE_URL, AUTH_SECRET, ADMIN_*, BITRIX_WEBHOOK_URL
+nano .env   # STAGE=staging, DATABASE_URL, AUTH_SECRET, ADMIN_*, BITRIX_WEBHOOK_URL
 ```
 
 ## 4. PostgreSQL
@@ -64,7 +64,7 @@ pm2 startup
 ## 8. Nginx + SSL
 
 ```bash
-sudo cp docs/deploy/nginx-stage.example.conf /etc/nginx/sites-available/crmflow24-stage
+sudo cp docs/deploy/nginx-staging-example.conf /etc/nginx/sites-available/crmflow24-stage
 sudo ln -s /etc/nginx/sites-available/crmflow24-stage /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx

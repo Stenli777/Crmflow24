@@ -19,6 +19,7 @@ export function buildBlogIndexMetadata(): Metadata {
   return {
     title,
     description,
+    metadataBase: new URL(getSiteUrl()),
     alternates: { canonical: "/blog" },
     openGraph: {
       title: `${title} — CRM Flow24`,
@@ -42,6 +43,7 @@ export function buildBlogCategoryMetadata(
   return {
     title,
     description,
+    metadataBase: new URL(getSiteUrl()),
     alternates: { canonical },
     openGraph: {
       title,
@@ -96,8 +98,18 @@ export function buildBlogPostMetadata(post: BlogPostArticle): Metadata {
       type: "article",
       publishedTime: post.publishedAt?.toISOString(),
       modifiedTime: post.updatedAt.toISOString(),
-      ...(ogImage ? { images: [{ url: ogImage }] } : {}),
+      ...(ogImage ? { images: [{ url: ogImage, alt: post.title }] } : {}),
     },
     metadataBase: new URL(getSiteUrl()),
+    ...(ogImage
+      ? {
+          twitter: {
+            card: "summary_large_image" as const,
+            title: ogTitle,
+            description: ogDescription,
+            images: [ogImage],
+          },
+        }
+      : {}),
   };
 }

@@ -5,6 +5,8 @@ import { Providers } from "./providers";
 import { siteConfig } from "@/config/site";
 import { YandexMetrikaServer } from "@/components/YandexMetrikaServer";
 import { SiteJsonLd } from "@/components/seo/SiteJsonLd";
+import { isIndexableEnvironment } from "@/lib/seo/deployEnvironment";
+import { getSiteUrl } from "@/lib/seo/siteUrl";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -31,36 +33,51 @@ const openSans = Open_Sans({
  *
  * Пока файлов нет, сайт использует только `/favicon.svg`; OG-image не задан — мессенджеры могут подставить свой fallback.
  */
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.siteUrl),
-  title: {
-    default: `${siteConfig.brandTagline} — ${siteConfig.brandName}`,
-    template: `%s | ${siteConfig.brandName}`,
-  },
-  description:
-    "Настраиваем Bitrix24 под процессы: переезд с AmoCRM и Excel, воронки, телефония, мессенджеры, почта, автоматизации, смарт-процессы, согласования, отчёты и интеграции.",
-  alternates: {
-    canonical: "/",
-  },
-  icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
-  },
-  openGraph: {
-    type: "website",
-    locale: "ru_RU",
-    url: siteConfig.siteUrl,
-    siteName: siteConfig.brandName,
-    title: `${siteConfig.brandTagline} — ${siteConfig.brandName}`,
+export async function generateMetadata(): Promise<Metadata> {
+  const siteUrl = getSiteUrl();
+  const indexable = isIndexableEnvironment();
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: `${siteConfig.brandTagline} — ${siteConfig.brandName}`,
+      template: `%s | ${siteConfig.brandName}`,
+    },
     description:
-      "Настраиваем Bitrix24 под процессы: воронки, телефония, мессенджеры, автоматизации, отчёты и интеграции.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${siteConfig.brandTagline} — ${siteConfig.brandName}`,
-    description:
-      "Внедрение и интеграция Bitrix24: воронки, телефония, автоматизации и отчёты.",
-  },
-};
+      "Настраиваем Bitrix24 под процессы: переезд с AmoCRM и Excel, воронки, телефония, мессенджеры, почта, автоматизации, смарт-процессы, согласования, отчёты и интеграции.",
+    alternates: {
+      canonical: "/",
+    },
+    ...(indexable
+      ? {}
+      : {
+          robots: {
+            index: false,
+            follow: false,
+            nocache: true,
+            googleBot: { index: false, follow: false },
+          },
+        }),
+    icons: {
+      icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    },
+    openGraph: {
+      type: "website",
+      locale: "ru_RU",
+      url: siteUrl,
+      siteName: siteConfig.brandName,
+      title: `${siteConfig.brandTagline} — ${siteConfig.brandName}`,
+      description:
+        "Настраиваем Bitrix24 под процессы: воронки, телефония, мессенджеры, автоматизации, отчёты и интеграции.",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${siteConfig.brandTagline} — ${siteConfig.brandName}`,
+      description:
+        "Внедрение и интеграция Bitrix24: воронки, телефония, автоматизации и отчёты.",
+    },
+  };
+}
 
 export default function RootLayout({
   children,

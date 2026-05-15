@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { ADMIN_SESSION_COOKIE_NAME } from "@/lib/auth/constants";
+import { isIndexableEnvironment } from "@/lib/seo/deployEnvironment";
 
 /** Для JSON-LD (хлебные крошки) и иных SSR-решений по пути запроса. */
 export function middleware(request: NextRequest) {
@@ -18,9 +19,18 @@ export function middleware(request: NextRequest) {
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-pathname", pathname);
-  return NextResponse.next({
+  const response = NextResponse.next({
     request: { headers: requestHeaders },
   });
+
+  if (!isIndexableEnvironment()) {
+    response.headers.set(
+      "X-Robots-Tag",
+      "noindex, nofollow, noarchive, nosnippet",
+    );
+  }
+
+  return response;
 }
 
 export const config = {

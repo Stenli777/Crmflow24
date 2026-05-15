@@ -3,6 +3,7 @@ import {
   getCategoriesForSitemap,
   getPostsForSitemap,
 } from "@/lib/blog/seoQueries";
+import { isIndexableEnvironment } from "@/lib/seo/deployEnvironment";
 import { absoluteUrl } from "@/lib/seo/siteUrl";
 
 /** Обновление sitemap при новых статьях без полного rebuild. */
@@ -27,6 +28,10 @@ const STATIC_PAGES: {
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  if (!isIndexableEnvironment()) {
+    return [];
+  }
+
   const [posts, categories] = await Promise.all([
     getPostsForSitemap(),
     getCategoriesForSitemap(),
