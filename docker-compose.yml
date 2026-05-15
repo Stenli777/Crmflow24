@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: crmflow24-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: crmflow24
+      POSTGRES_PASSWORD: crmflow24_dev_password
+      POSTGRES_DB: crmflow24_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - crmflow24_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crmflow24 -d crmflow24_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  crmflow24_postgres_data:

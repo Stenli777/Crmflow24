@@ -1,0 +1,223 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum RobotsDirective {
+  INDEX_FOLLOW
+  INDEX_NOFOLLOW
+  NOINDEX_FOLLOW
+  NOINDEX_NOFOLLOW
+}
+
+enum VkPublicationStatus {
+  NOT_PUBLISHED
+  PUBLISHED
+  FAILED
+}
+
+enum MediaAssetType {
+  IMAGE
+  DOCUMENT
+  OTHER
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  posts Post[] @relation("PostAuthor")
+}
+
+model Category {
+  id             String   @id @default(cuid())
+  name           String
+  slug           String   @unique
+  description    String?
+  seoTitle       String?
+  seoDescription String?
+  sortOrder      Int      @default(0)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  posts Post[]
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  posts PostTag[]
+}
+
+model PostTag {
+  postId String
+  tagId  String
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+}
+
+model MediaAsset {
+  id           String         @id @default(cuid())
+  type         MediaAssetType @default(IMAGE)
+  filename     String
+  originalName String?
+  mimeType     String
+  sizeBytes    Int
+  width        Int?
+  height       Int?
+  alt          String?
+  title        String?
+  caption      String?
+  storageKey   String
+  publicUrl    String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  postsAsCover Post[] @relation("PostCoverImage")
+}
+
+model Post {
+  id String @id @default(cuid())
+
+  title       String
+  slug        String     @unique
+  summary     String?
+  excerpt     String?
+  contentJson Json?
+  contentHtml String?
+  status      PostStatus @default(DRAFT)
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  authorId String?
+  author   AdminUser? @relation("PostAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  coverImageId String?
+  coverImage   MediaAsset? @relation("PostCoverImage", fields: [coverImageId], references: [id], onDelete: SetNull)
+
+  seoTitle        String?
+  seoDescription  String?
+  seoKeywords     String?
+  canonicalUrl    String?
+  robotsDirective RobotsDirective @default(INDEX_FOLLOW)
+
+  ogTitle       String?
+  ogDescription String?
+  ogImageUrl    String?
+
+  schemaType String @default("BlogPosting")
+
+  faqItems PostFaqItem[]
+  tags     PostTag[]
+
+  relatedFrom PostRelation[] @relation("RelatedPostFrom")
+  relatedTo   PostRelation[] @relation("RelatedPostTo")
+
+  relatedServices PostServiceRelation[]
+
+  ctaTitle       String?
+  ctaText        String?
+  ctaButtonLabel String?
+  ctaButtonHref  String?
+
+  vkText        String?
+  vkStatus      VkPublicationStatus @default(NOT_PUBLISHED)
+  vkPostUrl     String?
+  vkPublishedAt DateTime?
+  vkLogs        VkPublicationLog[]
+
+  @@index([status])
+  @@index([publishedAt])
+  @@index([categoryId])
+}
+
+model PostFaqItem {
+  id        String   @id @default(cuid())
+  postId    String
+  question  String
+  answer    String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+}
+
+model PostRelation {
+  fromPostId String
+  toPostId   String
+  sortOrder  Int    @default(0)
+
+  fromPost Post @relation("RelatedPostFrom", fields: [fromPostId], references: [id], onDelete: Cascade)
+  toPost   Post @relation("RelatedPostTo", fields: [toPostId], references: [id], onDelete: Cascade)
+
+  @@id([fromPostId, toPostId])
+}
+
+model PostServiceRelation {
+  id          String @id @default(cuid())
+  postId      String
+  serviceSlug String
+  title       String
+  href        String
+  sortOrder   Int    @default(0)
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+}
+
+model VkPublicationLog {
+  id           String              @id @default(cuid())
+  postId       String
+  status       VkPublicationStatus
+  vkPostId     String?
+  vkPostUrl    String?
+  errorCode    String?
+  errorMessage String?
+  rawResponse  Json?
+  createdAt    DateTime            @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([status])
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
