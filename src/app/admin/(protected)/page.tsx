@@ -1,80 +1,50 @@
-import {
-  Box,
-  Button,
-  Chip,
-  Container,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { requireAdmin } from "@/lib/auth/requireAdmin";
-import { logoutAdminAction } from "@/lib/auth/actions";
+import Link from "next/link";
+import { Box, Button, Paper, Stack, Typography } from "@mui/material";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { siteSurfaces } from "@/theme/siteUi";
 
-const PLACEHOLDER_LINKS = [
-  { label: "Статьи", hint: "этап 3+" },
-  { label: "Категории", hint: "этап 3+" },
-  { label: "Медиа", hint: "этап 4+" },
-  { label: "Настройки", hint: "этап 5+" },
+const LINKS = [
+  { href: "/admin/posts", label: "Статьи", description: "Создание и редактирование материалов блога" },
+  { href: "/admin/categories", label: "Категории", description: "Рубрики для группировки статей" },
+  { href: "/admin/tags", label: "Теги", description: "Метки для фильтрации и навигации" },
 ] as const;
 
-export default async function AdminDashboardPage() {
-  const admin = await requireAdmin();
-
+export default function AdminDashboardPage() {
   return (
-    <Box component="main" sx={{ minHeight: "100vh", bgcolor: "grey.50", py: 4 }}>
-      <Container maxWidth="md">
-        <Paper
-          elevation={0}
-          sx={{
-            p: { xs: 3, sm: 4 },
-            borderRadius: `${siteSurfaces.cardRadiusPx}px`,
-            border: siteSurfaces.cardBorder,
-            boxShadow: siteSurfaces.cardShadowSoft,
-          }}
-        >
-          <Stack spacing={3}>
-            <Box>
-              <Typography variant="h4" component="h1" gutterBottom>
-                Админка CRM Flow24
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                CMS-блог будет добавлен на следующих этапах.
-              </Typography>
-            </Box>
-
-            <Typography variant="body2">
-              Вы вошли как:{" "}
-              <Box component="span" sx={{ fontWeight: 600 }}>
-                {admin.email}
-              </Box>
-            </Typography>
-
+    <AdminShell title="Панель админки">
+      <Stack spacing={2}>
+        {LINKS.map((item) => (
+          <Paper
+            key={item.href}
+            elevation={0}
+            sx={{
+              p: 2.5,
+              borderRadius: `${siteSurfaces.cardRadiusPx}px`,
+              border: siteSurfaces.cardBorder,
+              boxShadow: siteSurfaces.cardShadowSoft,
+            }}
+          >
             <Stack
-              direction="row"
-              spacing={1}
-              sx={{ flexWrap: "wrap", rowGap: 1 }}
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              sx={{
+                justifyContent: "space-between",
+                alignItems: { xs: "flex-start", sm: "center" },
+              }}
             >
-              {PLACEHOLDER_LINKS.map((item) => (
-                <Chip
-                  key={item.label}
-                  label={`${item.label} (${item.hint})`}
-                  disabled
-                  variant="outlined"
-                />
-              ))}
+              <Box>
+                <Typography variant="h6">{item.label}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {item.description}
+                </Typography>
+              </Box>
+              <Button component={Link} href={item.href} variant="contained">
+                Открыть
+              </Button>
             </Stack>
-
-            <Box>
-              <form action={logoutAdminAction}>
-                <Button type="submit" variant="outlined" color="inherit">
-                  Выйти
-                </Button>
-              </form>
-            </Box>
-          </Stack>
-        </Paper>
-      </Container>
-    </Box>
+          </Paper>
+        ))}
+      </Stack>
+    </AdminShell>
   );
 }
