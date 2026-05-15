@@ -1,6 +1,4 @@
-import Link from "next/link";
 import {
-  Button,
   Chip,
   Paper,
   Table,
@@ -12,6 +10,7 @@ import {
 } from "@mui/material";
 import { prisma } from "@/lib/db/prisma";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { ButtonLink } from "@/components/admin/ButtonLink";
 import { formatAdminDate } from "@/lib/admin/labels";
 
 export default async function CategoriesPage() {
@@ -24,9 +23,9 @@ export default async function CategoriesPage() {
     <AdminShell
       title="Категории"
       actions={
-        <Button component={Link} href="/admin/categories/new" variant="contained">
+        <ButtonLink href="/admin/categories/new" variant="contained">
           Создать
-        </Button>
+        </ButtonLink>
       }
     >
       <TableContainer component={Paper} elevation={0} variant="outlined">
@@ -59,9 +58,9 @@ export default async function CategoriesPage() {
                 <TableCell align="right">{cat._count.posts}</TableCell>
                 <TableCell>{formatAdminDate(cat.updatedAt)}</TableCell>
                 <TableCell align="right">
-                  <Button component={Link} href={`/admin/categories/${cat.id}`} size="small">
+                  <ButtonLink href={`/admin/categories/${cat.id}`} size="small">
                     Изменить
-                  </Button>
+                  </ButtonLink>
                 </TableCell>
               </TableRow>
             ))}

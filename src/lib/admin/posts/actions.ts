@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db/prisma";
@@ -17,14 +18,17 @@ import {
   parseTagIds,
   resolvePublishedAt,
 } from "./parse";
+import { parsePostContent } from "./sanitize";
 
 function postTextFields(formData: FormData) {
   const categoryId = String(formData.get("categoryId") ?? "").trim() || null;
+  const { contentJson, contentHtml } = parsePostContent(formData);
   return {
     title: String(formData.get("title") ?? "").trim(),
     summary: String(formData.get("summary") ?? "").trim() || null,
     excerpt: String(formData.get("excerpt") ?? "").trim() || null,
-    contentHtml: String(formData.get("contentHtml") ?? "").trim() || null,
+    contentJson,
+    contentHtml,
     status: parsePostStatus(formData.get("status")),
     categoryId,
     seoTitle: String(formData.get("seoTitle") ?? "").trim() || null,
@@ -91,13 +95,13 @@ export async function createPostAction(
   formData: FormData,
 ): Promise<AdminFormState> {
   const admin = await requireAdmin();
-  const fields = postTextFields(formData);
-
-  if (!fields.title) {
-    return formError("Название обязательно");
-  }
 
   try {
+    const fields = postTextFields(formData);
+
+    if (!fields.title) {
+      return formError("Название обязательно");
+    }
     const baseSlug = resolveSlugFromForm(
       String(formData.get("slug") ?? ""),
       fields.title,
@@ -120,6 +124,8 @@ export async function createPostAction(
         slug,
         summary: fields.summary,
         excerpt: fields.excerpt,
+        contentJson:
+          fields.contentJson === null ? Prisma.DbNull : fields.contentJson,
         contentHtml: fields.contentHtml,
         status: fields.status,
         publishedAt,
@@ -154,6 +160,9 @@ export async function createPostAction(
     redirect(`/admin/posts/${post.id}`);
   } catch (e) {
     if (e instanceof Error && e.message === "NEXT_REDIRECT") throw e;
+    if (e instanceof Error && e.message === "INVALID_CONTENT_JSON") {
+      return formError("Некорректный контент редактора");
+    }
     if (e instanceof Error && e.message === "SLUG_EMPTY") {
       return formError("Укажите заголовок или slug");
     }
@@ -174,18 +183,18 @@ export async function updatePostAction(
   await requireAdmin();
 
   const id = String(formData.get("id") ?? "");
-  const fields = postTextFields(formData);
-
-  if (!id || !fields.title) {
-    return formError("Название обязательно");
-  }
-
-  const existing = await prisma.post.findUnique({ where: { id } });
-  if (!existing) {
-    return formError("Статья не найдена");
-  }
 
   try {
+    const fields = postTextFields(formData);
+
+    if (!id || !fields.title) {
+      return formError("Название обязательно");
+    }
+
+    const existing = await prisma.post.findUnique({ where: { id } });
+    if (!existing) {
+      return formError("Статья не найдена");
+    }
     const baseSlug = resolveSlugFromForm(
       String(formData.get("slug") ?? ""),
       fields.title,
@@ -209,6 +218,8 @@ export async function updatePostAction(
         slug,
         summary: fields.summary,
         excerpt: fields.excerpt,
+        contentJson:
+          fields.contentJson === null ? Prisma.DbNull : fields.contentJson,
         contentHtml: fields.contentHtml,
         status: fields.status,
         publishedAt,
@@ -242,6 +253,9 @@ export async function updatePostAction(
     revalidatePath(`/admin/posts/${id}`);
     return { success: "Статья сохранена" };
   } catch (e) {
+    if (e instanceof Error && e.message === "INVALID_CONTENT_JSON") {
+      return formError("Некорректный контент редактора");
+    }
     if (e instanceof Error && e.message === "SLUG_EMPTY") {
       return formError("Укажите заголовок или slug");
     }

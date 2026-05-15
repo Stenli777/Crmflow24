@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { Box, Button, Paper, Stack, Typography } from "@mui/material";
+import { Box, Paper, Stack, Typography } from "@mui/material";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { ButtonLink } from "@/components/admin/ButtonLink";
 import { siteSurfaces } from "@/theme/siteUi";
 
 const LINKS = [
@@ -38,9 +38,9 @@ export default function AdminDashboardPage() {
                   {item.description}
                 </Typography>
               </Box>
-              <Button component={Link} href={item.href} variant="contained">
+              <ButtonLink href={item.href} variant="contained">
                 Открыть
-              </Button>
+              </ButtonLink>
             </Stack>
           </Paper>
         ))}

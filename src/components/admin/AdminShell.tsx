@@ -1,5 +1,4 @@
 import type { PropsWithChildren, ReactNode } from "react";
-import Link from "next/link";
 import {
   AppBar,
   Box,
@@ -9,6 +8,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
+import { ButtonLink } from "@/components/admin/ButtonLink";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { logoutAdminAction } from "@/lib/auth/actions";
 
@@ -17,6 +17,7 @@ const NAV = [
   { href: "/admin/posts", label: "Статьи" },
   { href: "/admin/categories", label: "Категории" },
   { href: "/admin/tags", label: "Теги" },
+  { href: "/admin/media", label: "Медиа" },
 ] as const;
 
 type AdminShellProps = PropsWithChildren<{
@@ -36,15 +37,14 @@ export async function AdminShell({ title, actions, children }: AdminShellProps) 
           </Typography>
           <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", flex: 1 }}>
             {NAV.map((item) => (
-              <Button
+              <ButtonLink
                 key={item.href}
-                component={Link}
                 href={item.href}
                 size="small"
                 color="inherit"
               >
                 {item.label}
-              </Button>
+              </ButtonLink>
             ))}
           </Stack>
           <Typography variant="body2" color="text.secondary" sx={{ display: { xs: "none", sm: "block" } }}>

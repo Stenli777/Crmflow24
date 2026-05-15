@@ -34,6 +34,7 @@ import { createPostAction, updatePostAction } from "@/lib/admin/posts/actions";
 import { POST_STATUS_LABELS, VK_STATUS_LABELS } from "@/lib/admin/labels";
 import { siteSurfaces } from "@/theme/siteUi";
 import { FormAlert } from "./FormAlert";
+import { TiptapEditor } from "./editor/TiptapEditor";
 
 type PostWithRelations = Post & {
   tags: { tagId: string }[];
@@ -176,14 +177,9 @@ export function PostForm({
                 ))}
               </FormGroup>
             </FormControl>
-            <TextField
-              name="contentHtml"
-              label="HTML-контент статьи"
-              multiline
-              minRows={10}
-              defaultValue={post?.contentHtml ?? ""}
-              fullWidth
-              helperText="Временно: textarea. На этапе 4 — TipTap."
+            <TiptapEditor
+              initialContentJson={post?.contentJson}
+              initialContentHtml={post?.contentHtml}
             />
           </Stack>
         </Box>

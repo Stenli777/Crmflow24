@@ -1,6 +1,4 @@
-import Link from "next/link";
 import {
-  Button,
   Chip,
   Paper,
   Table,
@@ -13,6 +11,7 @@ import {
 import type { PostStatus } from "@prisma/client";
 import { prisma } from "@/lib/db/prisma";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { ButtonLink } from "@/components/admin/ButtonLink";
 import {
   formatAdminDate,
   POST_STATUS_LABELS,
@@ -52,9 +51,9 @@ export default async function PostsPage({ searchParams }: PageProps) {
     <AdminShell
       title="Статьи"
       actions={
-        <Button component={Link} href="/admin/posts/new" variant="contained">
+        <ButtonLink href="/admin/posts/new" variant="contained">
           Создать
-        </Button>
+        </ButtonLink>
       }
     >
       <PostsFilters
@@ -106,9 +105,9 @@ export default async function PostsPage({ searchParams }: PageProps) {
                     />
                   </TableCell>
                   <TableCell align="right">
-                    <Button component={Link} href={`/admin/posts/${post.id}`} size="small">
+                    <ButtonLink href={`/admin/posts/${post.id}`} size="small">
                       Изменить
-                    </Button>
+                    </ButtonLink>
                   </TableCell>
                 </TableRow>
               ))

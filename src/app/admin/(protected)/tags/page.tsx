@@ -1,6 +1,4 @@
-import Link from "next/link";
 import {
-  Button,
   Paper,
   Table,
   TableBody,
@@ -11,6 +9,7 @@ import {
 } from "@mui/material";
 import { prisma } from "@/lib/db/prisma";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { ButtonLink } from "@/components/admin/ButtonLink";
 import { formatAdminDate } from "@/lib/admin/labels";
 
 export default async function TagsPage() {
@@ -23,9 +22,9 @@ export default async function TagsPage() {
     <AdminShell
       title="Теги"
       actions={
-        <Button component={Link} href="/admin/tags/new" variant="contained">
+        <ButtonLink href="/admin/tags/new" variant="contained">
           Создать
-        </Button>
+        </ButtonLink>
       }
     >
       <TableContainer component={Paper} elevation={0} variant="outlined">
@@ -47,9 +46,9 @@ export default async function TagsPage() {
                 <TableCell align="right">{tag._count.posts}</TableCell>
                 <TableCell>{formatAdminDate(tag.updatedAt)}</TableCell>
                 <TableCell align="right">
-                  <Button component={Link} href={`/admin/tags/${tag.id}`} size="small">
+                  <ButtonLink href={`/admin/tags/${tag.id}`} size="small">
                     Изменить
-                  </Button>
+                  </ButtonLink>
                 </TableCell>
               </TableRow>
             ))}
