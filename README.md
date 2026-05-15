@@ -53,6 +53,12 @@ npm run start
 
 `start` поднимает сервер Next.js (порт по умолчанию **3000**). Для продакшена задайте `PORT` при необходимости.
 
+## Staging / VPS (блог + CMS)
+
+Пошаговый staging: [docs/deploy/staging-vps.md](docs/deploy/staging-vps.md)  
+Шаблон env: [.env.staging.example](.env.staging.example)  
+Healthcheck: `GET /api/health`
+
 ## Деплой на сервер по SSH (Node + PM2)
 
 Общая схема:
