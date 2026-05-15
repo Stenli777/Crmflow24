@@ -82,6 +82,7 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim());
 
     return {
+      name: form.name.trim().length > 0 ? "" : "Укажите имя",
       email: emailOk ? "" : "Проверьте email",
       phone:
         form.phone.trim().length === 0 || form.phone.trim().length >= 10
@@ -92,7 +93,7 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
           ? ""
           : "Опишите задачу хотя бы в 1–2 предложениях",
     };
-  }, [form.email, form.message, form.phone]);
+  }, [form.email, form.message, form.name, form.phone]);
 
   const hasContact = form.phone.trim().length > 0 || form.email.trim().length > 0;
   const fieldsOk =
@@ -102,7 +103,11 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
     !errors.phone &&
     !errors.message;
 
+  const showNameError = submitted && Boolean(errors.name);
+  const showPhoneError = submitted && (Boolean(errors.phone) || !hasContact);
+  const showEmailError = submitted && (Boolean(errors.email) || !hasContact);
   const showMessageError = (submitted || messageBlurred) && Boolean(errors.message);
+  const showConsentError = submitted && !consentPd;
 
   const canSubmit = consentPd && fieldsOk;
 
@@ -210,6 +215,8 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
             required
             value={form.name}
             onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))}
+            error={showNameError}
+            helperText={(showNameError && errors.name) || " "}
             fullWidth
             disabled={isSubmitting}
           />
@@ -227,8 +234,10 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
             label="Телефон"
             value={form.phone}
             onChange={(e) => setForm((s) => ({ ...s, phone: e.target.value }))}
-            error={submitted && Boolean(errors.phone)}
-            helperText={(submitted && errors.phone) || " "}
+            error={showPhoneError}
+            helperText={
+              (showPhoneError && (errors.phone || (!hasContact ? "Укажите телефон или email" : ""))) || " "
+            }
             fullWidth
             disabled={isSubmitting}
           />
@@ -236,8 +245,10 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
             label="Email"
             value={form.email}
             onChange={(e) => setForm((s) => ({ ...s, email: e.target.value }))}
-            error={submitted && Boolean(errors.email)}
-            helperText={(submitted && errors.email) || " "}
+            error={showEmailError}
+            helperText={
+              (showEmailError && (errors.email || (!hasContact ? "Укажите телефон или email" : ""))) || " "
+            }
             fullWidth
             disabled={isSubmitting}
           />
@@ -262,6 +273,14 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
               checked={consentPd}
               onChange={(e) => setConsentPd(e.target.checked)}
               disabled={isSubmitting}
+              sx={
+                showConsentError
+                  ? {
+                      color: "error.main",
+                      "&.Mui-checked": { color: "error.main" },
+                    }
+                  : undefined
+              }
             />
           }
           label={
@@ -282,8 +301,21 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
               со мной.
             </Typography>
           }
-          sx={{ alignItems: "flex-start", ml: 0 }}
+          sx={{
+            alignItems: "flex-start",
+            ml: 0,
+            ...(showConsentError
+              ? {
+                  "& .MuiFormControlLabel-label": { color: "error.main" },
+                }
+              : {}),
+          }}
         />
+        {showConsentError ? (
+          <Typography variant="caption" color="error" sx={{ mt: -1.5, display: "block", lineHeight: 1.4 }}>
+            Отметьте согласие на обработку персональных данных
+          </Typography>
+        ) : null}
 
         <FormControlLabel
           control={
@@ -310,7 +342,7 @@ export function ContactForm({ initialUtm, serviceFromQuery = "" }: ContactFormPr
             type="submit"
             variant="contained"
             size="large"
-            disabled={!consentPd || isSubmitting}
+            disabled={isSubmitting}
             sx={{ textTransform: "none", fontWeight: 700 }}
           >
             {isSubmitting ? <CircularProgress size={22} color="inherit" /> : "Отправить заявку"}

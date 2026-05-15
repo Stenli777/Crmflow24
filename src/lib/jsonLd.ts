@@ -24,7 +24,7 @@ export function buildOrganizationJsonLd() {
 }
 
 export function buildFaqPageJsonLd(
-  items: readonly { q: string; a: string }[],
+  items: readonly { q: string; a: string; cta?: { label: string; href: string } }[],
 ): Record<string, unknown> {
   return {
     "@context": "https://schema.org",
@@ -34,7 +34,9 @@ export function buildFaqPageJsonLd(
       name: item.q,
       acceptedAnswer: {
         "@type": "Answer",
-        text: item.a,
+        text: item.cta
+          ? `${item.a} ${item.cta.label}: ${base}${item.cta.href}`
+          : item.a,
       },
     })),
   };

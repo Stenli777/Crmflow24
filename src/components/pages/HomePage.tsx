@@ -9,6 +9,7 @@ import {
   Container,
   Paper,
   Stack,
+  Link as MuiLink,
   Typography,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -24,7 +25,7 @@ import { CasesGrid } from "@/components/CasesGrid";
 import { StagesGrid } from "@/components/StagesGrid";
 import { CtaBanner } from "@/components/CtaBanner";
 import { CardShell } from "@/components/CardShell";
-import { bitrixAssembly, bitrixConnectItems, clientPainPoints, faqs } from "@/content/site-content";
+import { bitrixConnectItems, clientPainPoints, faqs } from "@/content/site-content";
 import { siteConfig } from "@/config/site";
 import { legalConfig } from "@/config/legal";
 import { siteSurfaces } from "@/theme/siteUi";
@@ -124,15 +125,6 @@ export function HomePage() {
                   </Typography>
                 </Stack>
               </Paper>
-              <Typography
-                component="p"
-                variant="body1"
-                color="text.secondary"
-                sx={{ lineHeight: 1.65, maxWidth: 600 }}
-              >
-                Помогаем перейти из Excel, AmoCRM и разрозненных каналов в понятную CRM-систему: воронки,
-                телефония, мессенджеры, автоматизации, BI-отчёты и контроль работы менеджеров.
-              </Typography>
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.25 }}>
                 <Button
                   component={Link}
@@ -318,7 +310,7 @@ export function HomePage() {
       <Section id="audience" tone="muted">
         <SectionHeader
           kicker="Кому помогаем"
-          title="Собственник, РОП и маркетолог — когда вокруг CRM уже «не тянется»"
+          title="Собственник, РОП и маркетолог — когда CRM уже не справляется с объёмом или её просто нет"
           subtitle="Клиенты часто приходят из хаоса: Excel, AmoCRM, разрозненные мессенджеры, телефония отдельно, почта отдельно. Нет нормальных воронок, отчётов, автоматизаций и понятного контроля менеджеров. Мы наводим систему в Bitrix24 и объясняем шаги без лишнего технического шума."
         />
       </Section>
@@ -338,29 +330,6 @@ export function HomePage() {
         >
           {clientPainPoints.map((line) => (
             <CardShell key={line} sx={{ p: 2, boxShadow: siteSurfaces.cardShadowHairline }}>
-              <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.45 }}>
-                {line}
-              </Typography>
-            </CardShell>
-          ))}
-        </Box>
-      </Section>
-
-      <Section id="inside" tone="muted">
-        <SectionHeader
-          kicker="Состав решения"
-          title="Что собираем внутри Bitrix24"
-          subtitle="Не обязательно включать всё сразу: обычно начинаем с того, что даёт максимум порядка при минимуме риска для команды."
-        />
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "repeat(5, 1fr)" },
-            gap: 1.25,
-          }}
-        >
-          {bitrixAssembly.map((line) => (
-            <CardShell key={line} sx={{ p: 2 }}>
               <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.45 }}>
                 {line}
               </Typography>
@@ -500,6 +469,15 @@ export function HomePage() {
               <AccordionDetails sx={{ px: 2, pb: 2, pt: 0 }}>
                 <Typography color="text.secondary" variant="body1" sx={{ lineHeight: 1.65 }}>
                   {item.a}
+                  {item.cta ? (
+                    <>
+                      {" "}
+                      <MuiLink component={Link} href={item.cta.href} sx={{ fontWeight: 600 }}>
+                        {item.cta.label}
+                      </MuiLink>
+                      .
+                    </>
+                  ) : null}
                 </Typography>
               </AccordionDetails>
             </Accordion>
