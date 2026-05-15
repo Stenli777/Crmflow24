@@ -39,9 +39,21 @@
 
 Grep: RSS/sitemap/llms/seoQueries — нет `@tiptap`, нет `lib/admin` actions.
 
-## Проверено
+## SEO-инфраструктура до этапа
 
-(заполняется после smoke)
+| Артефакт | Было |
+|----------|------|
+| `sitemap.ts` | Статика без `/blog` |
+| `robots.ts` | Allow `/`, без Disallow admin/api |
+| JSON-LD | Organization + Breadcrumb в `SiteJsonLd` |
+| Header | Без «Блог» |
+
+## Проверено автоматически
+
+- `npm run lint` / `npm run build` — OK
+- `db:generate` — EPERM (Windows, engine занят)
+- Smoke (`next start` :3004): RSS, Dzen RSS, sitemap, robots, llms, llms-full, FAQPage JSON-LD, «Блог» в HTML
+- Grep: нет TipTap/admin в seo/rss/llms routes
 
 ## Риски
 

@@ -1,0 +1,25 @@
+# Пример: PostgreSQL для staging на VPS (не применять на production без решения).
+# cp docker-compose.staging.yml.example docker-compose.staging.yml
+# Задайте POSTGRES_PASSWORD в .env рядом с compose (не коммитить).
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: crmflow24-postgres-stage
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: crmflow24_stage_user
+      POSTGRES_PASSWORD: CHANGE_ME
+      POSTGRES_DB: crmflow24_stage
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - crmflow24_stage_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crmflow24_stage_user -d crmflow24_stage"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  crmflow24_stage_pgdata:
