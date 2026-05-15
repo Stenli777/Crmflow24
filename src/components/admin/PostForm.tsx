@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef } from "react";
 import Link from "next/link";
 import {
   Box,
@@ -34,7 +34,10 @@ import { createPostAction, updatePostAction } from "@/lib/admin/posts/actions";
 import { POST_STATUS_LABELS, VK_STATUS_LABELS } from "@/lib/admin/labels";
 import { siteSurfaces } from "@/theme/siteUi";
 import { FormAlert } from "./FormAlert";
-import { TiptapEditor } from "./editor/TiptapEditor";
+import {
+  TiptapEditor,
+  type TiptapEditorHandle,
+} from "./editor/TiptapEditor";
 
 type PostWithRelations = Post & {
   tags: { tagId: string }[];
@@ -77,6 +80,7 @@ export function PostForm({
 }: PostFormProps) {
   const action = post ? updatePostAction : createPostAction;
   const [state, formAction, pending] = useActionState(action, initialState);
+  const editorRef = useRef<TiptapEditorHandle>(null);
 
   const selectedTagIds = new Set(post?.tags.map((t) => t.tagId) ?? []);
   const selectedRelated = new Set(
@@ -93,6 +97,9 @@ export function PostForm({
     <Paper
       component="form"
       action={formAction}
+      onSubmit={() => {
+        editorRef.current?.syncToFormFields();
+      }}
       elevation={0}
       sx={{
         p: { xs: 2, sm: 3 },
@@ -178,6 +185,7 @@ export function PostForm({
               </FormGroup>
             </FormControl>
             <TiptapEditor
+              ref={editorRef}
               initialContentJson={post?.contentJson}
               initialContentHtml={post?.contentHtml}
             />

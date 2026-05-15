@@ -81,13 +81,50 @@ UPLOADS_PUBLIC_BASE_URL="/uploads"
 ## Что проверено автоматически
 
 - `npm run lint` — OK
-- `npm run build` — OK (см. отчёт в чате)
+- `npm run build` — OK
 - docker/migrate/seed — по результатам команд
 
-## Что не проверено в браузере агентом
+## Допроверка после реализации (2026-05-15)
 
-- Полный smoke: редактор, save/reopen, image in article, media page UI.
-- Upload без login, forbidden file types — логика в коде, нужна ручная проверка.
+### API / auth (скрипт `scripts/_stage4-verify.mjs`)
+
+| Проверка | Результат |
+|----------|-----------|
+| `/admin`, `/admin/media` без cookie → 307 login | OK |
+| С admin session → 200 | OK |
+| `POST /api/admin/media/upload` без auth → 401 | OK |
+| Upload PNG → 200, файл на диске, `MediaAsset` в БД | OK |
+| Public URL открывается | OK |
+| SVG / TXT / HTML → 400 | OK |
+| `/admin/media` показывает загруженное изображение | OK |
+
+### Браузерный smoke (Playwright, `scripts/_stage4-playwright.mjs`)
+
+| Проверка | Результат |
+|----------|-----------|
+| `/admin/posts/new` — TipTap, форматирование (H2/H3, bold, list, link) | OK |
+| Upload изображения в статью | OK |
+| Save → redirect на `/admin/posts/[id]` | OK |
+| Reopen: текст и `<img>` в редакторе | OK |
+| `contentJson` / `contentHtml` в PostgreSQL | OK |
+| Logout → `/admin/login`, `/admin/media` без cookie → login | OK |
+
+Cookie banner на публичных страницах блокировал клики — в тесте отключён через `localStorage` ключ `crmflow24_cookie_consent_v1`.
+
+### Исправление при допроверке
+
+**Проблема:** hidden inputs `contentJson` / `contentHtml` не попадали в `FormData` server action при submit (React не видел обновления через ref до отправки).
+
+**Решение:**
+
+- `TiptapEditor` — `forwardRef`, запись в DOM hidden inputs через `writeHiddenFields`, `syncToFormFields()` в `useImperativeHandle`.
+- `PostForm` — `editorRef`, `onSubmit` вызывает `syncToFormFields()` перед отправкой.
+
+`preventDefault` + ручной `formAction(FormData)` **не** используется — ломает redirect после `createPostAction`.
+
+### Ложноположительный сбой в тесте
+
+Regex `waitForURL(/\/admin\/posts\/[^/]+$/)` совпадал с `/admin/posts/new`. Исправлено на `(?!new$)` в временном скрипте; в БД контент сохранялся корректно.
 
 ## Риски
 
@@ -102,11 +139,12 @@ UPLOADS_PUBLIC_BASE_URL="/uploads"
 2. RSS, sitemap entries для постов.
 3. Опционально: cover image picker, delete media, S3 provider.
 
-## Ручной чеклист
+## Ручной чеклист (для финального приёмочного прогона в браузере)
 
-- [ ] TipTap: абзац, H2, H3, bold, list, link — save/reopen
-- [ ] Upload JPG/WebP, картинка в статье после reopen
-- [ ] `/admin/media` показывает asset
-- [ ] Файл в `public/uploads/media/YYYY/MM/`
-- [ ] SVG/txt upload → ошибка
-- [ ] Upload без cookie → 401
+- [x] TipTap: абзац, H2, H3, bold, list, link — save/reopen (автотест)
+- [x] Upload JPG/WebP, картинка в статье после reopen (автотест)
+- [x] `/admin/media` показывает asset (API-тест)
+- [x] Файл в `public/uploads/media/YYYY/MM/` (API-тест)
+- [x] SVG/txt upload → ошибка (API-тест)
+- [x] Upload без cookie → 401 (API-тест)
+- [ ] Визуальная проверка toolbar и media page в Chrome (рекомендуется перед релизом)
