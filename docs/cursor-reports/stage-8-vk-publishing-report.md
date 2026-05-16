@@ -62,43 +62,54 @@
 
 | Команда | Результат |
 |---------|-----------|
-| `npm run docker:db:up` | OK — контейнер `crmflow24-postgres` Running |
+| `npm run docker:db:up` | OK — `crmflow24-postgres` на **5434** |
 | `npm run db:generate` | OK |
-| `npm run db:migrate` (с хоста) | FAIL — P1000: на `127.0.0.1:5432` слушает **локальный PostgreSQL**, не Docker |
-| `prisma migrate deploy` (через `--network container:crmflow24-postgres`) | OK — применена `20260515180000_add_vk_dry_run_status` |
-| `npm run db:seed` (через docker network) | OK — admin `info@crmflow24.ru`, smoke-статья `/blog/testovaya-statya-dlya-publichnogo-bloga` |
+| `npm run db:migrate` (с хоста, `.env` → 5434) | OK |
+| `npm run db:seed` | OK — admin из `ADMIN_EMAIL`, статья `testovaya-statya-dlya-publichnogo-bloga` |
 | Enum в БД | OK — `NOT_PUBLISHED`, `DRY_RUN`, `PUBLISHED`, `FAILED` |
 | `npm run lint` | OK |
-| `npm run build` | OK (Prisma P1000 при SSG с хоста — из‑за того же конфликта порта) |
+| `npm run build` | OK |
+| Prisma smoke `scripts/smoke/vk-dry-run.mts` | OK — `DRY_RUN` + log |
+| UI smoke `scripts/smoke/vk-dry-run-ui.mts` (Playwright) | OK — см. ниже |
 
-### Конфликт порта 5432 (важно)
+### Локальный PostgreSQL: порт **5434** (не 5433)
 
-На машине одновременно слушают порт 5432 Docker и локальный PostgreSQL (`127.0.0.1`). Prisma с хоста подключается к **локальному** инстансу → P1000.
+- **5432** — занят системным PostgreSQL (`127.0.0.1`).
+- **5433** — занят другим Docker-контейнером `postgres` (проект whatsaper).
+- **5434** — CRM Flow24 (`docker-compose.yml` + `.env.example`).
 
-**Рекомендация:** в `.env` выровнять `DATABASE_URL` с `docker-compose.yml` **или** сменить порт Docker на `5433:5432` и обновить URL **или** остановить локальный PostgreSQL на 5432.
+`DATABASE_URL`:
 
-### Smoke dry-run (скрипт)
+```env
+postgresql://crmflow24:crmflow24_dev_password@localhost:5434/crmflow24_dev?schema=public
+```
 
-`scripts/smoke/vk-dry-run.mts` (через docker network):
+### UI smoke (Playwright, headless)
+
+После `taskkill` зависшего процесса на `:3000` и одного `npm run dev`:
 
 ```json
 {
-  "dryRun": true,
-  "slug": "testovaya-statya-dlya-publichnogo-bloga",
+  "ok": true,
+  "statusVisible": true,
+  "logTable": true,
   "vkStatus": "DRY_RUN",
   "logStatus": "DRY_RUN"
 }
 ```
 
-Real VK API не вызывался. UI в браузере не проверялся.
+Сценарий: login → `/admin/posts/[id]` → vkText → Сохранить → «Проверить VK публикацию (dry-run)» → alert + статус + таблица логов. Real VK API не вызывался.
 
-## Smoke test (UI, ручной)
+**Важно:** на Windows иногда на `:3000` остаётся «зависший» Node — админка показывает устаревшие id и edit 404. Решение: остановить все `node`, очистить `.next`, запустить один `npm run dev`.
 
-После исправления `DATABASE_URL` на хосте:
+### Admin cache
 
-- [ ] `npm run dev` → `/admin/login`
-- [ ] опубликованная статья → vkText → кнопка dry-run
-- [ ] vkStatus=DRY_RUN, лог в панели
+В `src/app/admin/(protected)/layout.tsx` добавлено `dynamic = "force-dynamic"` — админка не кэшируется статически.
+
+## Smoke test (ручной в браузере)
+
+- [x] Автоматизировано через `scripts/smoke/vk-dry-run-ui.mts`
+- [ ] При желании повторить вручную в Chrome
 
 ## Следующий шаг
 
