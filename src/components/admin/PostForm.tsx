@@ -27,11 +27,10 @@ import type {
   PostStatus,
   RobotsDirective,
   Tag,
-  VkPublicationStatus,
 } from "@prisma/client";
 import type { AdminFormState } from "@/lib/admin/types";
 import { createPostAction, updatePostAction } from "@/lib/admin/posts/actions";
-import { POST_STATUS_LABELS, VK_STATUS_LABELS } from "@/lib/admin/labels";
+import { POST_STATUS_LABELS } from "@/lib/admin/labels";
 import { siteSurfaces } from "@/theme/siteUi";
 import { FormAlert } from "./FormAlert";
 import {
@@ -275,33 +274,7 @@ export function PostForm({
             ВКонтакте
           </Typography>
           <Stack spacing={2}>
-            <TextField name="vkText" label="Текст для VK" multiline minRows={3} defaultValue={post?.vkText ?? ""} fullWidth />
-            {post ? (
-              <>
-                <TextField
-                  label="Статус VK"
-                  value={VK_STATUS_LABELS[post.vkStatus as VkPublicationStatus]}
-                  fullWidth
-                  slotProps={{ htmlInput: { readOnly: true } }}
-                />
-                {post.vkPostUrl ? (
-                  <TextField
-                    label="URL поста VK"
-                    value={post.vkPostUrl}
-                    fullWidth
-                    slotProps={{ htmlInput: { readOnly: true } }}
-                  />
-                ) : null}
-                {post.vkPublishedAt ? (
-                  <TextField
-                    label="Опубликовано в VK"
-                    value={toDatetimeLocal(post.vkPublishedAt)}
-                    fullWidth
-                    slotProps={{ htmlInput: { readOnly: true } }}
-                  />
-                ) : null}
-              </>
-            ) : null}
+            <TextField name="vkText" label="Текст для VK" multiline minRows={3} defaultValue={post?.vkText ?? ""} fullWidth helperText="Пустое поле — автотекст из заголовка и описания со ссылкой на статью" />
           </Stack>
         </Box>
 

@@ -8,6 +8,7 @@ export const POST_STATUS_LABELS: Record<PostStatus, string> = {
 
 export const VK_STATUS_LABELS: Record<VkPublicationStatus, string> = {
   NOT_PUBLISHED: "Не опубликовано",
+  DRY_RUN: "Проверка (dry-run)",
   PUBLISHED: "Опубликовано",
   FAILED: "Ошибка",
 };
