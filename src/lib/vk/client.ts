@@ -4,6 +4,22 @@ export type VkWallPostResponse = {
   post_id: number;
 };
 
+export type VkWallUploadServer = {
+  upload_url: string;
+};
+
+export type VkUploadServerResponse = {
+  server: number;
+  photo: string;
+  hash: string;
+};
+
+export type VkSavedWallPhoto = {
+  id: number;
+  owner_id: number;
+  access_key?: string;
+};
+
 export type VkApiResult<T> =
   | { ok: true; data: T }
   | {
@@ -111,4 +127,100 @@ export async function publishWallPost(
 
 export function resolveVkOwnerId(groupId: string): string {
   return toOwnerId(groupId);
+}
+
+function toPositiveGroupId(groupId: string): string {
+  return groupId.replace(/^-/, "");
+}
+
+export async function getWallUploadServer(
+  groupId: string,
+  config: Pick<VkConfig, "accessToken" | "apiVersion">,
+): Promise<VkApiResult<VkWallUploadServer>> {
+  return vkApi<VkWallUploadServer>(
+    "photos.getWallUploadServer",
+    { group_id: toPositiveGroupId(groupId) },
+    config,
+  );
+}
+
+export async function uploadPhotoToWallServer(
+  uploadUrl: string,
+  file: { buffer: Buffer; mimeType: string; filename: string },
+): Promise<
+  | { ok: true; data: VkUploadServerResponse }
+  | { ok: false; errorMessage: string; raw: unknown }
+> {
+  const form = new FormData();
+  const blob = new Blob([new Uint8Array(file.buffer)], { type: file.mimeType });
+  form.append("photo", blob, file.filename);
+
+  let response: Response;
+  try {
+    response = await fetch(uploadUrl, {
+      method: "POST",
+      body: form,
+      signal: AbortSignal.timeout(60_000),
+    });
+  } catch {
+    return {
+      ok: false,
+      errorMessage: "Ошибка загрузки файла на сервер VK",
+      raw: null,
+    };
+  }
+
+  let json: unknown;
+  try {
+    json = await response.json();
+  } catch {
+    return {
+      ok: false,
+      errorMessage: "Некорректный ответ сервера загрузки VK",
+      raw: null,
+    };
+  }
+
+  const record = json as Partial<VkUploadServerResponse> & { error?: string };
+  if (!response.ok || record.error || !record.server || !record.hash || !record.photo) {
+    return {
+      ok: false,
+      errorMessage: record.error ?? "Сервер VK не принял изображение",
+      raw: json,
+    };
+  }
+
+  return {
+    ok: true,
+    data: {
+      server: record.server,
+      photo: record.photo,
+      hash: record.hash,
+    },
+  };
+}
+
+export async function saveWallPhoto(
+  input: {
+    groupId: string;
+    server: number;
+    photo: string;
+    hash: string;
+  },
+  config: Pick<VkConfig, "accessToken" | "apiVersion">,
+): Promise<VkApiResult<VkSavedWallPhoto[]>> {
+  return vkApi<VkSavedWallPhoto[]>(
+    "photos.saveWallPhoto",
+    {
+      group_id: toPositiveGroupId(input.groupId),
+      server: input.server,
+      photo: input.photo,
+      hash: input.hash,
+    },
+    config,
+  );
+}
+
+export function formatPhotoAttachment(photo: VkSavedWallPhoto): string {
+  return `photo${photo.owner_id}_${photo.id}`;
 }

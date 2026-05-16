@@ -1,10 +1,14 @@
-import { prisma } from "../../src/lib/db/prisma";
-import { getVkConfig } from "../../src/lib/vk/config";
-import { buildVkPostMessage } from "../../src/lib/vk/buildVkPost";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+const { getVkConfig } = await import("../../src/lib/vk/config");
+const { buildVkPostMessage } = await import("../../src/lib/vk/buildVkPost");
+const { resolveVkImage } = await import("../../src/lib/vk/resolveVkImage");
 
 const post = await prisma.post.findFirst({
   where: { status: "PUBLISHED" },
   orderBy: { updatedAt: "desc" },
+  include: { coverImage: { select: { publicUrl: true, mimeType: true } } },
 });
 
 if (!post) {
@@ -14,6 +18,7 @@ if (!post) {
 
 const cfg = getVkConfig();
 const message = buildVkPostMessage(post);
+const resolvedImage = resolveVkImage(post);
 
 await prisma.$transaction([
   prisma.vkPublicationLog.create({
@@ -24,6 +29,13 @@ await prisma.$transaction([
       rawResponse: {
         dryRun: true,
         messagePreview: message.slice(0, 200),
+        image: resolvedImage
+          ? {
+              source: resolvedImage.source,
+              url: resolvedImage.url,
+              attachmentPreview: "photo{owner_id}_{id} (dry-run)",
+            }
+          : null,
       },
     },
   }),
@@ -37,21 +49,13 @@ await prisma.$transaction([
   }),
 ]);
 
-const updated = await prisma.post.findUnique({
-  where: { id: post.id },
-  include: {
-    vkLogs: { take: 1, orderBy: { createdAt: "desc" } },
-  },
-});
-
 console.log(
   JSON.stringify(
     {
       dryRun: cfg.dryRun,
       slug: post.slug,
-      vkStatus: updated?.vkStatus,
-      logStatus: updated?.vkLogs[0]?.status,
-      messagePreview: message.slice(0, 120),
+      vkStatus: "DRY_RUN",
+      hasImagePreview: Boolean(resolvedImage),
     },
     null,
     2,

@@ -6,6 +6,7 @@ import { VkPublishPanel } from "@/components/admin/posts/VkPublishPanel";
 import { DeleteButton } from "@/components/admin/DeleteButton";
 import { deletePostAction } from "@/lib/admin/posts/actions";
 import { getVkConfig } from "@/lib/vk/config";
+import { resolveVkImage } from "@/lib/vk/resolveVkImage";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -22,6 +23,7 @@ export default async function EditPostPage({ params }: PageProps) {
         faqItems: { orderBy: { sortOrder: "asc" } },
         relatedServices: { orderBy: { sortOrder: "asc" } },
         relatedFrom: true,
+        coverImage: { select: { publicUrl: true, mimeType: true } },
       },
     }),
     prisma.category.findMany({
@@ -66,6 +68,7 @@ export default async function EditPostPage({ params }: PageProps) {
         post={post}
         logs={vkLogs}
         dryRun={getVkConfig().dryRun}
+        resolvedImage={resolveVkImage(post)}
       />
     </AdminShell>
   );

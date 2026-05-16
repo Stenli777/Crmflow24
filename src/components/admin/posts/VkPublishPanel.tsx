@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import {
+  Alert,
   Box,
   Button,
   Paper,
@@ -15,13 +16,15 @@ import {
 } from "@mui/material";
 import {
   PostStatus,
+  VkPublicationStatus,
   type Post,
   type VkPublicationLog,
-  type VkPublicationStatus,
 } from "@prisma/client";
 import { publishPostToVkAction } from "@/lib/admin/posts/vkActions";
 import { VK_STATUS_LABELS, formatAdminDate } from "@/lib/admin/labels";
 import type { AdminFormState } from "@/lib/admin/types";
+import type { ResolvedVkImage } from "@/lib/vk/resolveVkImage";
+import { VK_IMAGE_SOURCE_LABELS } from "@/lib/vk/resolveVkImage";
 import { siteSurfaces } from "@/theme/siteUi";
 import { FormAlert } from "../FormAlert";
 
@@ -32,20 +35,42 @@ type VkPublishPanelProps = {
   >;
   logs: VkPublicationLog[];
   dryRun: boolean;
+  resolvedImage: ResolvedVkImage | null;
 };
 
 const initialState: AdminFormState = {};
 
-export function VkPublishPanel({ post, logs, dryRun }: VkPublishPanelProps) {
+function attachmentFromLog(log: VkPublicationLog): string | null {
+  const raw = log.rawResponse;
+  if (!raw || typeof raw !== "object") return null;
+  const record = raw as {
+    attachments?: string | null;
+    image?: { attachment?: string };
+  };
+  if (typeof record.attachments === "string") return record.attachments;
+  if (record.image?.attachment) return record.image.attachment;
+  return null;
+}
+
+export function VkPublishPanel({
+  post,
+  logs,
+  dryRun,
+  resolvedImage,
+}: VkPublishPanelProps) {
   const [state, formAction, pending] = useActionState(
     publishPostToVkAction,
     initialState,
   );
 
-  const isPublished = post.status === PostStatus.PUBLISHED;
-  const buttonLabel = dryRun
+  const isPublishedOnSite = post.status === PostStatus.PUBLISHED;
+  const vkPublished = post.vkStatus === VkPublicationStatus.PUBLISHED;
+  const primaryLabel = dryRun
     ? "Проверить VK публикацию (dry-run)"
     : "Опубликовать во ВКонтакте";
+  const republishLabel = dryRun
+    ? "Проверить повторно (dry-run)"
+    : "Опубликовать повторно";
 
   return (
     <Paper
@@ -66,25 +91,29 @@ export function VkPublishPanel({ post, logs, dryRun }: VkPublishPanelProps) {
 
       <Stack spacing={2}>
         <Typography variant="body2" color="text.secondary">
-          Текст для VK редактируется в форме статьи выше.{" "}
+          Текст для VK — в форме статьи выше.{" "}
           {dryRun
-            ? "Сейчас включён dry-run: реальный API не вызывается."
-            : "Режим реальной публикации (VK_DRY_RUN=false)."}
+            ? "Dry-run: VK API и upload изображения не выполняются."
+            : "Реальная публикация (VK_DRY_RUN=false)."}
         </Typography>
 
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={2}
+          sx={{ flexWrap: "wrap" }}
+        >
           <Box>
             <Typography variant="caption" color="text.secondary">
               Статус VK
             </Typography>
             <Typography variant="body1">
-              {VK_STATUS_LABELS[post.vkStatus as VkPublicationStatus]}
+              {VK_STATUS_LABELS[post.vkStatus]}
             </Typography>
           </Box>
           {post.vkPostUrl ? (
             <Box>
               <Typography variant="caption" color="text.secondary">
-                URL поста
+                URL поста VK
               </Typography>
               <Typography variant="body1" sx={{ wordBreak: "break-all" }}>
                 <a href={post.vkPostUrl} target="_blank" rel="noopener noreferrer">
@@ -96,7 +125,7 @@ export function VkPublishPanel({ post, logs, dryRun }: VkPublishPanelProps) {
           {post.vkPublishedAt ? (
             <Box>
               <Typography variant="caption" color="text.secondary">
-                Опубликовано в VK
+                Последняя публикация
               </Typography>
               <Typography variant="body1">
                 {formatAdminDate(post.vkPublishedAt)}
@@ -105,13 +134,66 @@ export function VkPublishPanel({ post, logs, dryRun }: VkPublishPanelProps) {
           ) : null}
         </Stack>
 
-        {isPublished ? (
-          <form action={formAction}>
-            <input type="hidden" name="postId" value={post.id} />
-            <Button type="submit" variant="contained" disabled={pending}>
-              {pending ? "Отправка…" : buttonLabel}
-            </Button>
-          </form>
+        <Box sx={{ p: 2, bgcolor: "grey.50", borderRadius: 2 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            Изображение для VK
+          </Typography>
+          {resolvedImage ? (
+            <Stack spacing={0.5}>
+              <Typography variant="body2">
+                Источник: {VK_IMAGE_SOURCE_LABELS[resolvedImage.source]}
+              </Typography>
+              <Typography variant="body2" sx={{ wordBreak: "break-all" }}>
+                <a href={resolvedImage.url} target="_blank" rel="noopener noreferrer">
+                  {resolvedImage.url}
+                </a>
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {dryRun
+                  ? "В dry-run файл не загружается в VK; в логе будет preview attachment."
+                  : "Будет загружено на сервер VK и прикреплено к посту."}
+              </Typography>
+            </Stack>
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              Изображение не найдено (обложка / OG / img в тексте). Пост уйдёт только с
+              текстом и ссылкой.
+            </Typography>
+          )}
+        </Box>
+
+        {vkPublished ? (
+          <Alert severity="warning">
+            Статья уже опубликована в VK. Повторная отправка создаст{" "}
+            <strong>новый</strong> пост на стене.
+          </Alert>
+        ) : null}
+
+        {isPublishedOnSite ? (
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+            {!vkPublished ? (
+              <form action={formAction}>
+                <input type="hidden" name="postId" value={post.id} />
+                <Button type="submit" variant="contained" disabled={pending}>
+                  {pending ? "Отправка…" : primaryLabel}
+                </Button>
+              </form>
+            ) : null}
+            {vkPublished ? (
+              <form action={formAction}>
+                <input type="hidden" name="postId" value={post.id} />
+                <input type="hidden" name="forceRepublish" value="1" />
+                <Button
+                  type="submit"
+                  variant="outlined"
+                  color="warning"
+                  disabled={pending}
+                >
+                  {pending ? "Отправка…" : republishLabel}
+                </Button>
+              </form>
+            ) : null}
+          </Stack>
         ) : (
           <Typography variant="body2" color="warning.main">
             Сначала опубликуйте статью на сайте (статус «Опубликовано»).
@@ -129,7 +211,7 @@ export function VkPublishPanel({ post, logs, dryRun }: VkPublishPanelProps) {
                   <TableCell>Дата</TableCell>
                   <TableCell>Статус</TableCell>
                   <TableCell>URL</TableCell>
-                  <TableCell>Код</TableCell>
+                  <TableCell>Attachment</TableCell>
                   <TableCell>Ошибка</TableCell>
                 </TableRow>
               </TableHead>
@@ -137,10 +219,8 @@ export function VkPublishPanel({ post, logs, dryRun }: VkPublishPanelProps) {
                 {logs.map((log) => (
                   <TableRow key={log.id}>
                     <TableCell>{formatAdminDate(log.createdAt)}</TableCell>
-                    <TableCell>
-                      {VK_STATUS_LABELS[log.status as VkPublicationStatus]}
-                    </TableCell>
-                    <TableCell sx={{ maxWidth: 200, wordBreak: "break-all" }}>
+                    <TableCell>{VK_STATUS_LABELS[log.status]}</TableCell>
+                    <TableCell sx={{ maxWidth: 160, wordBreak: "break-all" }}>
                       {log.vkPostUrl ? (
                         <a
                           href={log.vkPostUrl}
@@ -153,8 +233,14 @@ export function VkPublishPanel({ post, logs, dryRun }: VkPublishPanelProps) {
                         "—"
                       )}
                     </TableCell>
-                    <TableCell>{log.errorCode ?? "—"}</TableCell>
-                    <TableCell>{log.errorMessage ?? "—"}</TableCell>
+                    <TableCell sx={{ wordBreak: "break-all" }}>
+                      {attachmentFromLog(log) ?? "—"}
+                    </TableCell>
+                    <TableCell>
+                      {log.errorMessage
+                        ? `${log.errorCode ? `[${log.errorCode}] ` : ""}${log.errorMessage}`
+                        : "—"}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
