@@ -58,23 +58,47 @@
 - Прямая загрузка картинки в VK **не реализована** (следующий этап)
 - Real publish в отчёте **не тестировался** без токена
 
-## Проверки (заполнить после прогона)
+## Проверки (Docker поднят, 2026-05-16)
 
 | Команда | Результат |
 |---------|-----------|
-| `npm run docker:db:up` | |
-| `npm run db:generate` | |
-| `npm run db:migrate` | |
-| `npm run db:seed` | |
-| `npm run lint` | |
-| `npm run build` | |
+| `npm run docker:db:up` | OK — контейнер `crmflow24-postgres` Running |
+| `npm run db:generate` | OK |
+| `npm run db:migrate` (с хоста) | FAIL — P1000: на `127.0.0.1:5432` слушает **локальный PostgreSQL**, не Docker |
+| `prisma migrate deploy` (через `--network container:crmflow24-postgres`) | OK — применена `20260515180000_add_vk_dry_run_status` |
+| `npm run db:seed` (через docker network) | OK — admin `info@crmflow24.ru`, smoke-статья `/blog/testovaya-statya-dlya-publichnogo-bloga` |
+| Enum в БД | OK — `NOT_PUBLISHED`, `DRY_RUN`, `PUBLISHED`, `FAILED` |
+| `npm run lint` | OK |
+| `npm run build` | OK (Prisma P1000 при SSG с хоста — из‑за того же конфликта порта) |
 
-## Smoke test (ручной)
+### Конфликт порта 5432 (важно)
 
-- [ ] login admin
-- [ ] published post + vkText
-- [ ] dry-run → DRY_RUN + log
-- [ ] no crash
+На машине одновременно слушают порт 5432 Docker и локальный PostgreSQL (`127.0.0.1`). Prisma с хоста подключается к **локальному** инстансу → P1000.
+
+**Рекомендация:** в `.env` выровнять `DATABASE_URL` с `docker-compose.yml` **или** сменить порт Docker на `5433:5432` и обновить URL **или** остановить локальный PostgreSQL на 5432.
+
+### Smoke dry-run (скрипт)
+
+`scripts/smoke/vk-dry-run.mts` (через docker network):
+
+```json
+{
+  "dryRun": true,
+  "slug": "testovaya-statya-dlya-publichnogo-bloga",
+  "vkStatus": "DRY_RUN",
+  "logStatus": "DRY_RUN"
+}
+```
+
+Real VK API не вызывался. UI в браузере не проверялся.
+
+## Smoke test (UI, ручной)
+
+После исправления `DATABASE_URL` на хосте:
+
+- [ ] `npm run dev` → `/admin/login`
+- [ ] опубликованная статья → vkText → кнопка dry-run
+- [ ] vkStatus=DRY_RUN, лог в панели
 
 ## Следующий шаг
 
