@@ -1,6 +1,6 @@
 "use server";
 
-import { PostStatus } from "@prisma/client";
+import { PostStatus, VkPublicationStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db/prisma";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
@@ -17,6 +17,33 @@ import {
   resolveVkOwnerId,
 } from "@/lib/vk/client";
 import { getVkConfig, isVkPublishConfigured } from "@/lib/vk/config";
+import { resolveVkImage, VK_IMAGE_SOURCE_LABELS } from "@/lib/vk/resolveVkImage";
+import { uploadVkImage } from "@/lib/vk/uploadVkImage";
+
+async function writeVkFailure(
+  postId: string,
+  error: {
+    errorCode?: string | number;
+    errorMessage: string;
+    rawResponse?: object;
+  },
+) {
+  await prisma.$transaction([
+    prisma.vkPublicationLog.create({
+      data: {
+        postId,
+        status: VkPublicationStatus.FAILED,
+        errorCode: error.errorCode != null ? String(error.errorCode) : null,
+        errorMessage: error.errorMessage,
+        rawResponse: error.rawResponse ?? undefined,
+      },
+    }),
+    prisma.post.update({
+      where: { id: postId },
+      data: { vkStatus: VkPublicationStatus.FAILED },
+    }),
+  ]);
+}
 
 export async function publishPostToVkAction(
   _prev: AdminFormState,
@@ -25,11 +52,19 @@ export async function publishPostToVkAction(
   await requireAdmin();
 
   const postId = String(formData.get("postId") ?? "").trim();
+  const forceRepublish = String(formData.get("forceRepublish") ?? "") === "1";
+
   if (!postId) {
     return formError("Не указан ID статьи");
   }
 
-  const post = await prisma.post.findUnique({ where: { id: postId } });
+  const post = await prisma.post.findUnique({
+    where: { id: postId },
+    include: {
+      coverImage: { select: { publicUrl: true, mimeType: true } },
+    },
+  });
+
   if (!post) {
     return formError("Статья не найдена");
   }
@@ -50,8 +85,9 @@ export async function publishPostToVkAction(
   }
 
   const vkConfig = getVkConfig();
-  let message: string;
+  const resolvedImage = resolveVkImage(post);
 
+  let message: string;
   try {
     message = buildVkPostMessage(post);
     assertNonEmptyVkMessage(message);
@@ -65,24 +101,38 @@ export async function publishPostToVkAction(
     revalidatePath(`/admin/posts/${postId}`);
   };
 
+  const imagePreviewBase = resolvedImage
+    ? {
+        source: resolvedImage.source,
+        sourceLabel: VK_IMAGE_SOURCE_LABELS[resolvedImage.source],
+        url: resolvedImage.url,
+      }
+    : null;
+
   if (vkConfig.dryRun) {
     await prisma.$transaction([
       prisma.vkPublicationLog.create({
         data: {
           postId,
-          status: "DRY_RUN",
+          status: VkPublicationStatus.DRY_RUN,
           vkPostId: "dry-run",
           vkPostUrl: null,
           rawResponse: {
             dryRun: true,
             messagePreview: message.slice(0, 500),
+            image: imagePreviewBase
+              ? {
+                  ...imagePreviewBase,
+                  attachmentPreview: "photo{owner_id}_{id} (dry-run, upload skipped)",
+                }
+              : null,
           },
         },
       }),
       prisma.post.update({
         where: { id: postId },
         data: {
-          vkStatus: "DRY_RUN",
+          vkStatus: VkPublicationStatus.DRY_RUN,
           vkPublishedAt: null,
           vkPostUrl: null,
         },
@@ -90,10 +140,21 @@ export async function publishPostToVkAction(
     ]);
 
     revalidate();
+    const imageNote = imagePreviewBase
+      ? ` Изображение: ${imagePreviewBase.sourceLabel} (upload не выполнялся).`
+      : " Без изображения.";
     return {
-      success:
-        "Проверка VK (dry-run): реальный API не вызывался. Статус статьи: DRY_RUN.",
+      success: `Проверка VK (dry-run): API не вызывался.${imageNote}`,
     };
+  }
+
+  if (
+    post.vkStatus === VkPublicationStatus.PUBLISHED &&
+    !forceRepublish
+  ) {
+    return formError(
+      "Статья уже опубликована в VK. Нажмите «Опубликовать повторно», если нужен новый пост.",
+    );
   }
 
   if (!isVkPublishConfigured(vkConfig)) {
@@ -103,31 +164,56 @@ export async function publishPostToVkAction(
   }
 
   const ownerId = resolveVkOwnerId(vkConfig.groupId!);
+  const apiConfig = {
+    accessToken: vkConfig.accessToken!,
+    apiVersion: vkConfig.apiVersion,
+    groupId: vkConfig.groupId!,
+  };
+
+  let attachment: string | undefined;
+  const publishMeta: Record<string, unknown> = {
+    image: imagePreviewBase,
+  };
+
+  if (resolvedImage) {
+    const upload = await uploadVkImage(resolvedImage, apiConfig);
+    if (!upload.ok) {
+      await writeVkFailure(postId, {
+        errorCode: upload.errorCode,
+        errorMessage: `[${upload.stage}] ${upload.errorMessage}`,
+        rawResponse: {
+          stage: upload.stage,
+          image: imagePreviewBase,
+          raw: upload.raw ?? null,
+        },
+      });
+      revalidate();
+      return formError(`VK image: ${upload.errorMessage}`);
+    }
+    attachment = upload.attachment;
+    publishMeta.image = {
+      ...imagePreviewBase,
+      attachment: upload.attachment,
+      vkPhotoId: upload.photo.id,
+      vkPhotoOwnerId: upload.photo.owner_id,
+    };
+  }
+
   const result = await publishWallPost(
-    { ownerId, message },
-    {
-      accessToken: vkConfig.accessToken!,
-      apiVersion: vkConfig.apiVersion,
-    },
+    { ownerId, message, attachments: attachment },
+    apiConfig,
   );
 
   if (!result.ok) {
-    await prisma.$transaction([
-      prisma.vkPublicationLog.create({
-        data: {
-          postId,
-          status: "FAILED",
-          errorCode: String(result.errorCode),
-          errorMessage: result.errorMessage,
-          rawResponse: result.raw as object,
-        },
-      }),
-      prisma.post.update({
-        where: { id: postId },
-        data: { vkStatus: "FAILED" },
-      }),
-    ]);
-
+    await writeVkFailure(postId, {
+      errorCode: result.errorCode,
+      errorMessage: result.errorMessage,
+      rawResponse: {
+        stage: "wall.post",
+        ...publishMeta,
+        raw: result.raw as object,
+      },
+    });
     revalidate();
     return formError(`VK API: ${result.errorMessage}`);
   }
@@ -140,16 +226,20 @@ export async function publishPostToVkAction(
     prisma.vkPublicationLog.create({
       data: {
         postId,
-        status: "PUBLISHED",
+        status: VkPublicationStatus.PUBLISHED,
         vkPostId,
         vkPostUrl,
-        rawResponse: { post_id: result.data.post_id },
+        rawResponse: {
+          post_id: result.data.post_id,
+          attachments: attachment ?? null,
+          ...publishMeta,
+        },
       },
     }),
     prisma.post.update({
       where: { id: postId },
       data: {
-        vkStatus: "PUBLISHED",
+        vkStatus: VkPublicationStatus.PUBLISHED,
         vkPublishedAt: now,
         vkPostUrl,
       },
@@ -157,5 +247,6 @@ export async function publishPostToVkAction(
   ]);
 
   revalidate();
-  return { success: `Опубликовано во ВКонтакте: ${vkPostUrl}` };
+  const attachNote = attachment ? ` Вложение: ${attachment}.` : "";
+  return { success: `Опубликовано во ВКонтакте: ${vkPostUrl}.${attachNote}` };
 }

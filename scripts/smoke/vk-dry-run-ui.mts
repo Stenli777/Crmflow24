@@ -25,7 +25,7 @@ function loadEnvFile(filePath: string) {
     ) {
       value = value.slice(1, -1);
     }
-    if (!(key in process.env)) {
+    if (!process.env[key]) {
       process.env[key] = value;
     }
   }
@@ -43,7 +43,7 @@ if (!email || !password) {
   process.exit(1);
 }
 
-const post = await prisma.post.findFirst({
+let post = await prisma.post.findFirst({
   where: { status: PostStatus.PUBLISHED },
   orderBy: { updatedAt: "desc" },
 });
@@ -52,6 +52,17 @@ if (!post) {
   console.error("NO_PUBLISHED_POST");
   process.exit(1);
 }
+
+// Для проверки image preview в dry-run (этап 9)
+post = await prisma.post.update({
+  where: { id: post.id },
+  data: {
+    ogImageUrl: "/images/logo.png",
+    vkStatus: "NOT_PUBLISHED",
+    vkPostUrl: null,
+    vkPublishedAt: null,
+  },
+});
 
 const browser = await chromium.launch({ headless: true });
 const context = await browser.newContext();
@@ -73,30 +84,25 @@ try {
   await page.locator('input[name="email"]').waitFor({ timeout: 20000 });
   await page.locator('input[name="email"]').fill(email);
   await page.locator('input[name="password"]').fill(password);
-  await page.locator('button[type="submit"]').click();
-  await page.waitForTimeout(3000);
+  await Promise.all([
+    page.waitForURL(
+      (url) =>
+        url.pathname.startsWith("/admin") &&
+        !url.pathname.startsWith("/admin/login"),
+      { timeout: 60000 },
+    ),
+    page.locator('button[type="submit"]').click(),
+  ]);
 
   await page.goto(`${baseUrl}/admin/posts/${post.id}`, {
     waitUntil: "domcontentloaded",
   });
-  await page.waitForTimeout(2000);
   await page.getByRole("heading", { name: "Публикация во ВКонтакте" }).waitFor({
-    timeout: 30000,
+    timeout: 60000,
   });
-  await page.keyboard.press("Escape").catch(() => {});
-
-  const vkText = `VK UI smoke ${new Date().toISOString()}`;
-  const postForm = page.locator("form").filter({
-    has: page.getByLabel("Текст для VK"),
-  });
-  await postForm.getByLabel("Текст для VK").fill(vkText);
-  await postForm.locator("button").filter({ hasText: "Сохранить" }).click();
-  await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
 
   await page
-    .getByRole("button", {
-      name: /Проверить VK публикацию|Опубликовать во ВКонтакте/,
-    })
+    .getByRole("button", { name: /Проверить VK публикацию/ })
     .click();
 
   await page
@@ -115,19 +121,45 @@ try {
     .first()
     .isVisible();
   const logTable = await page.getByText("Последние попытки").isVisible();
+  const imageBlockVisible = await page
+    .getByText("Изображение для VK")
+    .isVisible();
+  const imageSourceVisible = await page
+    .getByText("Источник: OG image")
+    .isVisible();
+
+  const raw = updated?.vkLogs[0]?.rawResponse as {
+    dryRun?: boolean;
+    image?: { attachmentPreview?: string; url?: string };
+  } | null;
+  const hasAttachmentPreview = Boolean(
+    raw?.image?.attachmentPreview?.includes("dry-run"),
+  );
+  const hasImageUrl = Boolean(raw?.image?.url);
+
+  const ok =
+    statusVisible &&
+    logTable &&
+    imageBlockVisible &&
+    imageSourceVisible &&
+    updated?.vkStatus === "DRY_RUN" &&
+    updated.vkLogs[0]?.status === "DRY_RUN" &&
+    hasAttachmentPreview &&
+    hasImageUrl;
 
   console.log(
     JSON.stringify(
       {
-        ok:
-          statusVisible &&
-          logTable &&
-          updated?.vkStatus === "DRY_RUN" &&
-          updated.vkLogs[0]?.status === "DRY_RUN",
+        ok,
         statusVisible,
         logTable,
+        imageBlockVisible,
+        imageSourceVisible,
         vkStatus: updated?.vkStatus,
         logStatus: updated?.vkLogs[0]?.status,
+        hasAttachmentPreview,
+        hasImageUrl,
+        attachmentPreview: raw?.image?.attachmentPreview ?? null,
         url: page.url(),
       },
       null,
@@ -135,11 +167,7 @@ try {
     ),
   );
 
-  if (
-    !statusVisible ||
-    !logTable ||
-    updated?.vkStatus !== "DRY_RUN"
-  ) {
+  if (!ok) {
     process.exit(1);
   }
 } finally {
