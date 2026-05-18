@@ -137,6 +137,47 @@ npm run smoke:scrap-import
 5. Smoke: `POST /api/scrap/articles/import` на staging
 6. Убедиться: draft **не** на `/blog`, **не** в `/sitemap.xml` и `/rss.xml`
 
+## Admin visibility
+
+Импортированные черновики видны **только в админке** (`/admin`). На `/blog`, в sitemap и RSS они не появляются, пока статус поста не `PUBLISHED` с датой публикации.
+
+### Список статей
+
+`/admin/posts`
+
+- Бейдж **Scrap** и компактный идентификатор `documentId:revisionId` у импортированных постов.
+- Фильтр **Источник**: «Все» / «Scrap imports» / «Вручную».
+- Query-параметр: `/admin/posts?source=scrap` (можно комбинировать с `status=DRAFT`).
+- Тестовые smoke-черновики помечаются бейджем **Test draft**, если в заголовке есть `Smoke test` или `удалить`.
+
+### Карточка статьи
+
+`/admin/posts/{id}`
+
+Блок **Scrap import** (read-only), если есть связанная запись `ScrapArticleImport`:
+
+| Поле | Назначение |
+|------|------------|
+| `documentId` / `revisionId` | Ключ идемпотентности Scrap |
+| `external_id` | `scrap:<documentId>:<revisionId>` — тот же формат, что в ack API |
+| `sourceUrl` | Ссылка на исходный материал (открывается в новой вкладке) |
+| `remoteStatus` | `draft`, `published`, `draft_locked` — состояние на стороне CRMFlow24 |
+| `editorialJson` | Оценки/статус редакции из Scrap |
+| `lastPayload` | Сырой payload в collapsible-блоке (только админка) |
+
+### Idempotency в админке
+
+Повторный POST с тем же `document_id` + `revision_id` не создаёт второй пост. В списке остаётся одна строка; при открытии редактора — тот же `postId` в URL.
+
+### Удаление smoke / test draft
+
+1. Откройте `/admin/posts?source=scrap&status=DRAFT` или найдите пост по заголовку (например «Smoke test Scrap to CRMFlow24 production - удалить»).
+2. Откройте `/admin/posts/{id}`.
+3. Нажмите **Удалить** (для тестовых черновиков — усиленное предупреждение).
+4. `ScrapArticleImport` удаляется каскадом вместе с `Post`.
+
+Альтернатива: Prisma Studio / SQL на VPS — только при необходимости, предпочтительно кнопка в админке.
+
 ## Staging first
 
 Рекомендуется сначала настроить `https://stage.crmflow24.ru` и dry-run Scrap, затем production.
