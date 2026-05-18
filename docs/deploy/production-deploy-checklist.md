@@ -70,6 +70,14 @@ pm2 describe crmflow24-prod | grep -i user
 
 Пользователь в `pm2 describe` и owner каталогов **должны совпадать**. Альтернатива: выполнять `npm run build` сразу от `www-data` (`sudo -u www-data npm run build`), тогда отдельный `chown` для `.next` не нужен (uploads shared всё равно проверить).
 
+## Scrap inbound (если включён)
+
+- [ ] В production `.env`: `SCRAP_IMPORT_TOKEN` (openssl rand -base64 32), тот же токен в Scrap publisher
+- [ ] `npm run db:deploy` (таблица `ScrapArticleImport`)
+- [ ] После build: smoke `POST https://crmflow24.ru/api/scrap/articles/import` (тестовый article_v2)
+- [ ] Импортированный draft открывается в `/admin/posts/{id}`
+- [ ] Draft **не** виден на `/blog`, в `/sitemap.xml`, `/rss.xml`
+
 ## Smoke tests (production)
 
 - [ ] `GET https://crmflow24.ru/api/health` → `status: ok`

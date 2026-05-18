@@ -17,7 +17,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "docker:db:up": "docker compose up -d postgres",
     "docker:db:down": "docker compose down",
-    "docker:db:logs": "docker compose logs -f postgres"
+    "docker:db:logs": "docker compose logs -f postgres",
+    "smoke:scrap-import": "tsx scripts/smoke/scrap-import.mts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -36,6 +37,7 @@
     "@tiptap/react": "^3.23.4",
     "@tiptap/starter-kit": "^3.23.4",
     "bcryptjs": "^3.0.3",
+    "marked": "^15.0.12",
     "next": "16.2.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",

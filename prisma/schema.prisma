@@ -170,9 +170,33 @@ model Post {
   vkPublishedAt DateTime?
   vkLogs        VkPublicationLog[]
 
+  scrapImports ScrapArticleImport[]
+
   @@index([status])
   @@index([publishedAt])
   @@index([categoryId])
+}
+
+model ScrapArticleImport {
+  id             String    @id @default(cuid())
+  provider       String    @default("scrap")
+  documentId     String
+  revisionId     String    @default("latest")
+  sourceUrl      String?
+  sourceDomain   String?
+  scrapedAt      DateTime?
+  postId         String
+  post           Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  payloadVersion String    @default("article_v2")
+  remoteStatus   String    @default("draft")
+  editorialJson  Json?
+  lastPayload    Json?
+  importedAt     DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([provider, documentId, revisionId])
+  @@index([postId])
+  @@index([sourceDomain])
 }
 
 model PostFaqItem {
