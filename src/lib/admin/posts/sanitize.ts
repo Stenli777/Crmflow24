@@ -1,11 +1,14 @@
 import sanitizeHtml from "sanitize-html";
 import type { Prisma } from "@prisma/client";
 
-const ALLOWED_TAGS = [
+/** Теги, допустимые в теле статьи (визуальный и HTML-режим редактора). */
+export const POST_CONTENT_ALLOWED_TAGS = [
   "p",
   "br",
   "strong",
+  "b",
   "em",
+  "i",
   "u",
   "s",
   "h2",
@@ -17,12 +20,25 @@ const ALLOWED_TAGS = [
   "blockquote",
   "a",
   "img",
-];
+  "table",
+  "thead",
+  "tbody",
+  "tr",
+  "th",
+  "td",
+  "code",
+  "pre",
+] as const;
 
 const ALLOWED_ATTRIBUTES: sanitizeHtml.IOptions["allowedAttributes"] = {
   a: ["href", "target", "rel"],
-  img: ["src", "alt", "title"],
+  img: ["src", "alt", "title", "width", "height"],
+  th: ["colspan", "rowspan"],
+  td: ["colspan", "rowspan"],
+  table: ["class"],
 };
+
+const DISALLOWED_PROTOCOL_RE = /^javascript:/i;
 
 function transformAnchor(
   tagName: string,
@@ -30,7 +46,7 @@ function transformAnchor(
 ): sanitizeHtml.Tag {
   if (tagName === "a" && attribs.href) {
     const href = attribs.href;
-    if (!href.toLowerCase().startsWith("javascript:")) {
+    if (!DISALLOWED_PROTOCOL_RE.test(href)) {
       attribs.rel = "nofollow noopener noreferrer";
       if (!attribs.target) {
         attribs.target = "_blank";
@@ -40,10 +56,9 @@ function transformAnchor(
   return { tagName, attribs };
 }
 
-/** Санитизация HTML перед сохранением в БД. */
-export function sanitizePostHtml(html: string): string {
-  return sanitizeHtml(html, {
-    allowedTags: ALLOWED_TAGS,
+function sanitizeOptions(): sanitizeHtml.IOptions {
+  return {
+    allowedTags: [...POST_CONTENT_ALLOWED_TAGS],
     allowedAttributes: ALLOWED_ATTRIBUTES,
     allowedSchemes: ["http", "https", "mailto"],
     allowedSchemesByTag: {
@@ -53,9 +68,12 @@ export function sanitizePostHtml(html: string): string {
     disallowedTagsMode: "discard",
     transformTags: {
       a: transformAnchor,
+      b: "strong",
+      i: "em",
     },
     exclusiveFilter(frame) {
-      if (frame.tag === "a" && frame.attribs.href?.toLowerCase().startsWith("javascript:")) {
+      const href = frame.attribs.href ?? frame.attribs.src ?? "";
+      if (DISALLOWED_PROTOCOL_RE.test(href)) {
         return true;
       }
       if (frame.tag === "img" && frame.attribs.src?.toLowerCase().startsWith("data:")) {
@@ -63,7 +81,12 @@ export function sanitizePostHtml(html: string): string {
       }
       return false;
     },
-  }).trim();
+  };
+}
+
+/** Санитизация HTML перед сохранением в БД и при вставке в редактор. */
+export function sanitizePostHtml(html: string): string {
+  return sanitizeHtml(html, sanitizeOptions()).trim();
 }
 
 export function parseContentJson(raw: string): Prisma.InputJsonValue | null {
